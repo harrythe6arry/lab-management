@@ -1,6 +1,17 @@
-.venv/
 *.pyc
+*.pyo
 __pycache__/
-instance/
-*.db
+<<<<<<< HEAD
+=======
+
+venv/
+env/
+
 .env
+.flaskenv
+
+.idea/
+
+.DS_Store
+Thumbs.db
+>>>>>>> main

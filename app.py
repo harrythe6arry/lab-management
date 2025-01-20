@@ -1,9 +1,15 @@
+import os
+import os
+import psycopg2
 from flask import Flask, render_template, redirect, url_for, request
-from flask_wtf.csrf import CSRFProtect
-
 app = Flask(__name__)
 
-
+def get_db_connection():
+    conn = psycopg2.connect(host=os.getenv('DB_HOST'),
+                            database=os.getenv('DB_NAME'),
+                            user=os.getenv('DB_USERNAME'),
+                            password=os.getenv('DB_PASSWORD'))
+    return conn
 @app.route('/')
 def hello_world():
     return 'Hello World!'
@@ -30,3 +36,4 @@ def signup():
 
 if __name__ == '__main__':
     app.run()
+
