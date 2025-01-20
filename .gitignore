@@ -1,6 +1,8 @@
 *.pyc
 *.pyo
 __pycache__/
+<<<<<<< HEAD
+=======
 
 venv/
 env/
@@ -12,8 +14,4 @@ env/
 
 .DS_Store
 Thumbs.db
-
-
-git rm --cached .env
-git commit -m "Remove .env from repository"
-git push
+>>>>>>> main
