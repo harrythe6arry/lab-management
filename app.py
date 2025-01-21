@@ -12,7 +12,7 @@ def get_db_connection():
     return conn
 @app.route('/')
 def hello_world():
-    return render_template('base.html')
+    return render_template('home.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -29,8 +29,10 @@ def signup():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        # Placeholder logic: Store these credentials in your database securely
-        print(f"Username: {username}, Password: {password}")
+        # hash the password use bcrypt
+
+        email = request.form.get('email')
+        print(f"Username: {username}, Password: {password}, Email: {email}")
         return redirect(url_for('login'))
     return render_template('signup.html')
 
