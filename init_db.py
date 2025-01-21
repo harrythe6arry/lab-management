@@ -1,15 +1,13 @@
-import os
-import psycopg2
 
-# Connect to the PostgreSQL database
-conn = psycopg2.connect(
-    host="localhost",
-    database="lab_management",
-    user=os.environ['DB_USERNAME'],
-    password=os.environ['DB_PASSWORD']
-)
 
-# Open a cursor to perform database operations
+def get_db_connection():
+    conn = psycopg2.connect(host=os.getenv('DB_HOST'),
+                            database=os.getenv('DB_NAME'),
+                            user=os.getenv('DB_USERNAME'),
+                            password=os.getenv('DB_PASSWORD'))
+    return conn
+
+conn = get_db_connection()
 cur = conn.cursor()
 
 # Create tables and insert sample data
@@ -30,8 +28,7 @@ cur.execute('''
 cur.execute('''
     INSERT INTO users (name, email, password, role) VALUES
     ('test2', 'test2@example.com', 'test2', 'Staff'),
-    ('test3', 'test3@example.com', 'test3', 'Manager')
-    ON CONFLICT (email) DO NOTHING;
+    ('test3', 'test3@example.com', 'test3', 'Manager');
 ''')
 
 # Create equipment table
@@ -49,8 +46,7 @@ cur.execute('''
 cur.execute('''
     INSERT INTO equipment (name, status, last_cleaned_at, location) VALUES
     ('Centrifuge', 'Available', '2024-12-10 10:00:00', 'Lab A'),
-    ('Microscope', 'In Use', '2024-12-09 15:30:00', 'Lab B')
-    ON CONFLICT (name) DO NOTHING;
+    ('Microscope', 'In Use', '2024-12-09 15:30:00', 'Lab B');
 ''')
 
 # Create cleaning_task table
@@ -69,8 +65,7 @@ cur.execute('''
 cur.execute('''
     INSERT INTO cleaning_task (equipment_id, assigned_to, status, completed_at) VALUES
     (1, 1, 'Pending', NULL),
-    (2, 2, 'Completed', '2024-12-09 16:00:00')
-    ON CONFLICT DO NOTHING;
+    (2, 2, 'Completed', '2024-12-09 16:00:00');
 ''')
 
 # Create inventory table
@@ -88,8 +83,7 @@ cur.execute('''
 cur.execute('''
     INSERT INTO inventory (item_name, quantity, threshold) VALUES
     ('Petri dish', 200, 50),
-    ('Gloves', 500, 100)
-    ON CONFLICT (item_name) DO NOTHING;
+    ('Gloves', 500, 100);
 ''')
 
 # Create schedule table
@@ -109,8 +103,7 @@ cur.execute('''
 cur.execute('''
     INSERT INTO schedule (equipment_id, booked_by, start_time, end_time, status) VALUES
     (1, 1, '2024-12-12 09:00:00', '2024-12-12 11:00:00', 'Confirmed'),
-    (2, 2, '2024-12-13 14:00:00', '2024-12-13 16:00:00', 'Cancelled')
-    ON CONFLICT DO NOTHING;
+    (2, 2, '2024-12-13 14:00:00', '2024-12-13 16:00:00', 'Cancelled');
 ''')
 
 # Create safety_checklist table
@@ -129,8 +122,7 @@ cur.execute('''
 cur.execute('''
     INSERT INTO safety_checklist (task, assigned_to, status, deadline) VALUES
     ('Check fire extinguishers', 1, 'Pending', '2024-12-15 17:00:00'),
-    ('Inspect safety goggles', 2, 'Completed', '2024-12-10 12:00:00')
-    ON CONFLICT (task) DO NOTHING;
+    ('Inspect safety goggles', 2, 'Completed', '2024-12-10 12:00:00');
 ''')
 
 # Create location table
@@ -147,14 +139,12 @@ cur.execute('''
 cur.execute('''
     INSERT INTO location (name, building) VALUES
     ('Lab A', 'Building 1'),
-    ('Lab B', 'Building 2')
-    ON CONFLICT (name) DO NOTHING;
+    ('Lab B', 'Building 2');
 ''')
 
 # Commit the transaction
 conn.commit()
 
-# Close the cursor and connection
 cur.close()
 conn.close()
 
