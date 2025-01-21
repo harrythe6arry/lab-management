@@ -12,7 +12,7 @@ def get_db_connection():
     return conn
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return render_template('base.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
