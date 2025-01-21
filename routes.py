@@ -15,8 +15,8 @@ def get_db_connection():
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
-    return 'Hello World!'
+def home():
+    return render_template('home.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -25,7 +25,7 @@ def login():
         password = request.form.get('password')
         # Placeholder logic: Validate these credentials
         print(f"Username: {username}, Password: {password}")
-        return redirect(url_for('hello_world'))  # Redirect after login
+        return redirect(url_for('home'))  # Redirect after login
     return render_template('login.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
