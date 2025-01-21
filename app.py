@@ -1,7 +1,4 @@
-import os
-import psycopg2
-from flask import Flask, render_template, redirect, url_for, request, jsonify
-from psycopg2 import sql
+from flask import Flask
 
 app = Flask(__name__)
 
