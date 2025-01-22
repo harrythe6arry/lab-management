@@ -14,6 +14,21 @@ def get_db_connection():
 
 app = Flask(__name__)
 
+
+@app.route('/task', methods=['GET', 'POST'])
+@app.route('/task')
+def task():
+    if request.method == 'POST':
+        date = request.form.get('taskDate')
+        equipment = request.form.get('equipment')
+        team_members = request.form.get('teamMembers')
+
+        print(f"Date: {date}, Equipment: {equipment}, Team Members: {team_members}")
+        return redirect(url_for('home'))
+
+    return render_template('task.html')
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
