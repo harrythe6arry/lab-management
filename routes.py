@@ -1,7 +1,8 @@
-from dotenv import load_dotenv
 import os
 import psycopg2
-from flask import Flask, render_template, redirect, url_for, request, jsonify
+from dotenv import load_dotenv
+from flask import Flask, render_template, redirect, url_for, request
+from Utils import auth, user
 
 load_dotenv()
 
@@ -23,8 +24,7 @@ def inventory():
 @app.route('/')
 def home():
     return render_template('home.html')
-
-
+<<<<<<< Updated upstream
 
 @app.route('/task', methods=['GET', 'POST'])
 def task():
@@ -37,26 +37,30 @@ def task():
         return redirect(url_for('home'))
 
     return render_template('task.html')
+=======
+>>>>>>> Stashed changes
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        # Placeholder logic: Validate these credentials
         print(f"Username: {username}, Password: {password}")
+        if auth.login(username, password):
+            print("Login successful")
         return redirect(url_for('home'))  # Redirect after login
     return render_template('login.html')
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
+@app.route('/adduser', methods=['GET', 'POST'])
+def add_user():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        # Placeholder logic: Store these credentials in your database securely
-        print(f"Username: {username}, Password: {password}")
-        return redirect(url_for('login'))
+        # print(f"Username: {username}, Password: {password}")
+        user.insert_user(username, password, 'Staff')
+        # print("User successfully created")
     return render_template('signup.html')
+
 
 @app.route('/equipment')
 def equipment():
