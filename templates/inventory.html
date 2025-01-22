@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory Management{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h1>Inventory Management</h1>
+
+    <table class="table table-hover table-bordered" id="inventory-table">
+        <thead class="table-primary">
+            <tr>
+                <th>Ingredients</th>
+                <th>Amount</th>
+                <th>Threshold</th>
+                <th>Last Updated</th>
+                <th>By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Placeholder for dynamic rows -->
+        </tbody>
+    </table>
+
+    <!-- Form to Add New Row -->
+    <form id="add-item-form" class="my-4">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <input type="text" id="ingredient" class="form-control" placeholder="Ingredient" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" id="amount" class="form-control" placeholder="Amount" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" id="threshold" class="form-control" placeholder="Threshold" required>
+            </div>
+            <div class="col-md-2">
+                <input type="text" id="by" class="form-control" placeholder="By" required>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Inventory Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-item-form">
+                        <input type="hidden" id="edit-id">
+                        <div class="mb-3">
+                            <label for="edit-ingredient" class="form-label">Ingredient</label>
+                            <input type="text" id="edit-ingredient" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-amount" class="form-label">Amount</label>
+                            <input type="number" id="edit-amount" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-threshold" class="form-label">Threshold</label>
+                            <input type="number" id="edit-threshold" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-by" class="form-label">By</label>
+                            <input type="text" id="edit-by" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Reference the table body
+    const tableBody = document.querySelector('#inventory-table tbody');
+    const addItemForm = document.getElementById('add-item-form');
+    const editItemForm = document.getElementById('edit-item-form');
+
+    // Add event listener to form submission
+    addItemForm.addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent form from reloading the page
+
+        // Retrieve input values
+        const ingredient = document.getElementById('ingredient').value;
+        const amount = document.getElementById('amount').value;
+        const threshold = document.getElementById('threshold').value;
+        const by = document.getElementById('by').value;
+
+        // Get the current date and time
+        const currentDate = new Date();
+        const lastUpdated = currentDate.toISOString().slice(0, 16); // Format as YYYY-MM-DDTHH:MM
+
+        // Create a new row
+        const newRow = document.createElement('tr');
+
+        // Add alert color if outdated
+        const timeDiff = currentDate - new Date(lastUpdated);
+        const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+        // Highlight row if last updated > 30 days ago
+        if (daysDiff > 30) {
+            newRow.classList.add('table-danger');
+        }
+
+        // if the amount is less than the threshold
+        if (amount < threshold) {
+            newRow.classList.add('table-warning');
+        }
+
+        // Populate the row with input values
+        newRow.innerHTML = `
+            <td>${ingredient}</td>
+            <td>${amount}</td>
+            <td>${threshold}</td>
+            <td>${lastUpdated}</td>
+            <td>${by}</td>
+            <td>
+                <button class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+            </td>
+        `;
+
+        // Append the new row to the table
+        tableBody.appendChild(newRow);
+
+        // Clear the form inputs
+        addItemForm.reset();
+
+    });
+
+    // Edit button event listener
+    tableBody.addEventListener('click', function (e) {
+        if (e.target.classList.contains('edit-btn')) {
+            const row = e.target.closest('tr');
+            const cells = row.children;
+
+            document.getElementById('edit-id').value = row.rowIndex;
+            document.getElementById('edit-ingredient').value = cells[0].textContent;
+            document.getElementById('edit-amount').value = cells[1].textContent;
+            document.getElementById('edit-threshold').value = cells[2].textContent;
+            document.getElementById('edit-by').value = cells[4].textContent;
+        }
+    });
+
+    // Save changes event listener
+    editItemForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const rowIndex = document.getElementById('edit-id').value;
+        const row = tableBody.rows[rowIndex - 1];
+        const cells = row.children;
+
+        cells[0].textContent = document.getElementById('edit-ingredient').value;
+        cells[1].textContent = document.getElementById('edit-amount').value;
+        cells[2].textContent = document.getElementById('edit-threshold').value;
+        cells[4].textContent = document.getElementById('edit-by').value;
+
+        // Close the modal
+        const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+        editModal.hide();
+    });
+</script>
+{% endblock %}

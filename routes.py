@@ -15,8 +15,18 @@ def get_db_connection():
 app = Flask(__name__)
 
 
+@app.route('/inventory', methods=['GET', 'POST'])
+def inventory():
+    return render_template('inventory.html')
+
+
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+
+
 @app.route('/task', methods=['GET', 'POST'])
-@app.route('/task')
 def task():
     if request.method == 'POST':
         date = request.form.get('taskDate')
@@ -27,11 +37,6 @@ def task():
         return redirect(url_for('home'))
 
     return render_template('task.html')
-
-
-@app.route('/')
-def home():
-    return render_template('home.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
