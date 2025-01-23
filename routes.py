@@ -24,7 +24,6 @@ def inventory():
 @app.route('/')
 def home():
     return render_template('home.html')
-<<<<<<< Updated upstream
 
 @app.route('/task', methods=['GET', 'POST'])
 def task():
@@ -37,8 +36,6 @@ def task():
         return redirect(url_for('home'))
 
     return render_template('task.html')
-=======
->>>>>>> Stashed changes
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
