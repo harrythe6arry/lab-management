@@ -2,7 +2,7 @@ import psycopg2
 from utils import auth, db
 
 def insert_user(username, password, role):
-    hashed_password = auth.hashed_password(password)  # Use a clearer function name
+    hashed_password = auth.hash_password(password)  # Use a clearer function name
     try:
         with db.get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -16,6 +16,9 @@ def insert_user(username, password, role):
     except psycopg2.Error as e:
         print(f"[ERROR] Failed to insert user: {e}")
         return False
+    finally:
+        if conn:
+            db.close_db_connection(conn)
 
 def delete(username):
     conn = None
@@ -25,8 +28,10 @@ def delete(username):
         cur.execute("DELETE FROM users WHERE name = %s", (username,))
         conn.commit()
         cur.close()
+        return True
     except Exception as e:
         print(f"Error: {e}")
+        return False
     finally:
         if conn:
             db.close_db_connection(conn)
