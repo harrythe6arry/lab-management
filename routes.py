@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, jsonify, Blueprint, session
 from datetime import datetime
 from psycopg2 import extras
-from Utils import auth, user, timezone, db
+from utils import auth, user, timezone, db
 routes = Blueprint("routes", __name__)
 
 def user_login_required(f):
