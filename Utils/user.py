@@ -1,37 +1,31 @@
 import psycopg2
-from psycopg2 import sql
-from . import auth
-import init_db as db
+from Utils import auth, db
 
 def insert_user(username, password, role):
-    hashed_password = auth.hashed(password)  # Clearer function name
+    hashed_password = auth.hashed_password(password)  # Use a clearer function name
     try:
         with db.get_db_connection() as conn:
             with conn.cursor() as cur:
-                insert_query = sql.SQL("""
+                cur.execute("""
                     INSERT INTO users (name, password, role)
                     VALUES (%s, %s, %s)
-                """)
-                cur.execute(insert_query, (username, hashed_password, role))
+                """, (username, hashed_password, role))
                 conn.commit()
                 print("User inserted successfully")
+                return True
     except psycopg2.Error as e:
-        print(f"Database error: {e}")
+        print(f"[ERROR] Failed to insert user: {e}")
+        return False
 
 def get_password_by_username(username):
     try:
         with db.get_db_connection() as conn:
             with conn.cursor() as cur:
-                select_query = sql.SQL("""
-                    SELECT password FROM users
-                    WHERE name = %s
-                """)
-                cur.execute(select_query, (username,))
+                cur.execute("""
+                    SELECT password FROM users WHERE name = %s
+                """, (username,))
                 result = cur.fetchone()
-                if result:
-                    return result[0]
-                else:
-                    return None
+                return result[0] if result else None  # Return password or None
     except psycopg2.Error as e:
-        print(f"Database error: {e}")
+        print(f"[ERROR] Failed to fetch password: {e}")
         return None

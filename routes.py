@@ -3,14 +3,15 @@ from datetime import datetime
 
 import psycopg2
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, url_for, request, jsonify
+from flask import Flask, render_template, redirect, url_for, request, jsonify, Blueprint
 from psycopg2 import extras
 from Utils.convert_time_zone import get_thailand_time
 
 
 from Utils import auth, user
+from Utils import auth, user, db  # Importing db as a module
 
-load_dotenv()
+routes = Blueprint("routes", __name__)  # Create a Blueprint
 
 def get_db_connection():
     conn = psycopg2.connect(host=os.getenv('DB_HOST'),
@@ -120,13 +121,11 @@ def delete_inventory_item():
         cur.close()
         conn.close()
 
-
-
-@app.route('/')
+@routes.route('/')
 def home():
     return render_template('home.html')
 
-@app.route('/task', methods=['GET', 'POST'])
+@routes.route('/task', methods=['GET', 'POST'])
 def task():
     if request.method == 'POST':
         date = request.form.get('taskDate')
@@ -134,11 +133,11 @@ def task():
         team_members = request.form.get('teamMembers')
 
         print(f"Date: {date}, Equipment: {equipment}, Team Members: {team_members}")
-        return redirect(url_for('home'))
+        return redirect(url_for('routes.home'))  # Use Blueprint name
 
     return render_template('task.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+@routes.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -146,27 +145,24 @@ def login():
         print(f"Username: {username}, Password: {password}")
         if auth.login(username, password):
             print("Login successful")
-        return redirect(url_for('home'))  # Redirect after login
+        return redirect(url_for('routes.home'))  # Use Blueprint name
     return render_template('login.html')
 
-@app.route('/adduser', methods=['GET', 'POST'])
+@routes.route('/adduser', methods=['GET', 'POST'])
 def add_user():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        # print(f"Username: {username}, Password: {password}")
         user.insert_user(username, password, 'Staff')
-        # print("User successfully created")
     return render_template('signup.html')
 
-
-@app.route('/equipment')
+@routes.route('/equipment')
 def equipment():
-    conn = get_db_connection()
+    conn = db.get_db_connection
     cur = conn.cursor()
     cur.execute('SELECT id, name, status, last_cleaned_at, location FROM equipment;')
     equipment_list = cur.fetchall()
     cur.close()
-    conn.close()
+    db.close_db_connection(conn)
 
     return render_template('equipment.html', equipment_list=equipment_list)
