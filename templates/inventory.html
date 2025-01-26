@@ -3,169 +3,259 @@
 {% block title %}Inventory Management{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <h1>Inventory Management</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Inventory Management</h1>
 
-    <table class="table table-hover table-bordered" id="inventory-table">
-        <thead class="table-primary">
-            <tr>
-                <th>Ingredients</th>
-                <th>Amount</th>
-                <th>Threshold</th>
-                <th>Last Updated</th>
-                <th>By</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Placeholder for dynamic rows -->
-        </tbody>
-    </table>
+        <!-- Add Item Button -->
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Add Item</button>
 
-    <!-- Form to Add New Row -->
-    <form id="add-item-form" class="my-4">
-        <div class="row g-3">
-            <div class="col-md-2">
-                <input type="text" id="ingredient" class="form-control" placeholder="Ingredient" required>
-            </div>
-            <div class="col-md-2">
-                <input type="number" id="amount" class="form-control" placeholder="Amount" required>
-            </div>
-            <div class="col-md-2">
-                <input type="number" id="threshold" class="form-control" placeholder="Threshold" required>
-            </div>
-            <div class="col-md-2">
-                <input type="text" id="by" class="form-control" placeholder="By" required>
-            </div>
-            <div class="col-md-1">
-                <button type="submit" class="btn btn-primary">Add</button>
+        <!-- Inventory Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Ingredient</th>
+                    <th>Amount</th>
+                    <th>Threshold</th>
+                    <th>Last Updated</th>
+                    <th>Updated By</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory_data %}
+                {% set days_old = (now - item.last_updated).days %}
+                <tr class="{% if days_old > 30 %}table-danger{% elif item.amount < item.threshold %}table-warning{% endif %}">
+                    <td>{{ item.ingredient }}</td>
+                    <td>{{ item.amount }}</td>
+                    <td>{{ item.threshold }}</td>
+                    <td>{{ item.last_updated.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ item.updated_by }}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm edit-btn me-2"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal"
+                                data-id="{{ item.id }}"
+                                data-ingredient="{{ item.ingredient }}"
+                                data-amount="{{ item.amount }}"
+                                data-threshold="{{ item.threshold }}"
+                                data-by="{{ item.updated_by }}">
+                            Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm delete-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteConfirmModal"
+                                data-id="{{ item.id }}"
+                                data-ingredient="{{ item.ingredient }}">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Add Item Modal -->
+        <div class="modal fade" id="addModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addItemForm">
+                            <div class="mb-3">
+                                <label class="form-label">Ingredient Name</label>
+                                <input type="text" class="form-control" name="ingredient" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Amount</label>
+                                <input type="number" class="form-control" name="amount" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Threshold</label>
+                                <input type="number" class="form-control" name="threshold" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Updated By</label>
+                                <input type="text" class="form-control" name="by" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Item</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </form>
 
-    <!-- Edit Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Inventory Item</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- Edit Item Modal -->
+        <div class="modal fade" id="editModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editItemForm">
+                            <input type="hidden" name="id" id="edit-id">
+                            <div class="mb-3">
+                                <label class="form-label">Ingredient Name</label>
+                                <input type="text" class="form-control" name="ingredient" id="edit-ingredient" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Amount</label>
+                                <input type="number" class="form-control" name="amount" id="edit-amount" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Threshold</label>
+                                <input type="number" class="form-control" name="threshold" id="edit-threshold" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Updated By</label>
+                                <input type="text" class="form-control" name="by" id="edit-by" required>
+                            </div>
+                            <button type="submit" class="btn btn-warning">Update Item</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <form id="edit-item-form">
-                        <input type="hidden" id="edit-id">
-                        <div class="mb-3">
-                            <label for="edit-ingredient" class="form-label">Ingredient</label>
-                            <input type="text" id="edit-ingredient" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit-amount" class="form-label">Amount</label>
-                            <input type="number" id="edit-amount" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit-threshold" class="form-label">Threshold</label>
-                            <input type="number" id="edit-threshold" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit-by" class="form-label">By</label>
-                            <input type="text" id="edit-by" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </form>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Confirm Deletion</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete <strong><span id="deleteItemName"></span></strong>?</p>
+                        <input type="hidden" id="deleteItemId">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-</div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    // Reference the table body
-    const tableBody = document.querySelector('#inventory-table tbody');
-    const addItemForm = document.getElementById('add-item-form');
-    const editItemForm = document.getElementById('edit-item-form');
+    <script>
 
-    // Add event listener to form submission
-    addItemForm.addEventListener('submit', function (e) {
-        e.preventDefault(); // Prevent form from reloading the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize modals
+        const deleteModal = new bootstrap.Modal('#deleteConfirmModal');
+        let currentDeleteItem = { id: null, name: null };
 
-        // Retrieve input values
-        const ingredient = document.getElementById('ingredient').value;
-        const amount = document.getElementById('amount').value;
-        const threshold = document.getElementById('threshold').value;
-        const by = document.getElementById('by').value;
+        // Add Item Form Handler
+        document.getElementById('addItemForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
 
-        // Get the current date and time
-        const currentDate = new Date();
-        const lastUpdated = currentDate.toISOString().slice(0, 16); // Format as YYYY-MM-DDTHH:MM
+            try {
+                const response = await fetch('/inventory/add', {
+                    method: 'POST',
+                    body: formData
+                });
 
-        // Create a new row
-        const newRow = document.createElement('tr');
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to add item');
+                }
+            } catch (error) {
+                console.error('Add Error:', error);
+                alert('Failed to add item');
+            }
+        });
 
-        // Add alert color if outdated
-        const timeDiff = currentDate - new Date(lastUpdated);
-        const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+        // Edit Button Click Handler
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Pre-fill the edit modal with the current item's data
+                document.getElementById('edit-id').value = this.dataset.id;
+                document.getElementById('edit-ingredient').value = this.dataset.ingredient;
+                document.getElementById('edit-amount').value = this.dataset.amount;
+                document.getElementById('edit-threshold').value = this.dataset.threshold;
+                document.getElementById('edit-by').value = this.dataset.by;
+            });
+        });
 
-        // Highlight row if last updated > 30 days ago
-        if (daysDiff > 30) {
-            newRow.classList.add('table-danger');
-        }
+        // Edit Form Submit Handler
+        document.getElementById('editItemForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
 
-        // if the amount is less than the threshold
-        if (amount < threshold) {
-            newRow.classList.add('table-warning');
-        }
+            try {
+                const response = await fetch('/inventory/edit', {
+                    method: 'POST',
+                    body: formData
+                });
 
-        // Populate the row with input values
-        newRow.innerHTML = `
-            <td>${ingredient}</td>
-            <td>${amount}</td>
-            <td>${threshold}</td>
-            <td>${lastUpdated}</td>
-            <td>${by}</td>
-            <td>
-                <button class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
-            </td>
-        `;
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to update item');
+                }
+            } catch (error) {
+                console.error('Update Error:', error);
+                alert('Failed to update item');
+            }
+        });
 
-        // Append the new row to the table
-        tableBody.appendChild(newRow);
+        // Delete Button Handler
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                currentDeleteItem = {
+                    id: this.dataset.id,
+                    name: this.dataset.ingredient
+                };
+                document.getElementById('deleteItemName').textContent = currentDeleteItem.name;
+                document.getElementById('deleteItemId').value = currentDeleteItem.id;
+            });
+        });
 
-        // Clear the form inputs
-        addItemForm.reset();
+        // Confirm Delete Handler
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/inventory/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `id=${encodeURIComponent(currentDeleteItem.id)}`
+                });
+
+                if (response.ok) {
+                    deleteModal.hide();
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.error}`);
+                }
+            } catch (error) {
+                console.error('Delete Error:', error);
+                alert('Failed to delete item');
+            }
+        });
 
     });
 
-    // Edit button event listener
-    tableBody.addEventListener('click', function (e) {
-        if (e.target.classList.contains('edit-btn')) {
-            const row = e.target.closest('tr');
-            const cells = row.children;
-
-            document.getElementById('edit-id').value = row.rowIndex;
-            document.getElementById('edit-ingredient').value = cells[0].textContent;
-            document.getElementById('edit-amount').value = cells[1].textContent;
-            document.getElementById('edit-threshold').value = cells[2].textContent;
-            document.getElementById('edit-by').value = cells[4].textContent;
-        }
-    });
-
-    // Save changes event listener
-    editItemForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const rowIndex = document.getElementById('edit-id').value;
-        const row = tableBody.rows[rowIndex - 1];
-        const cells = row.children;
-
-        cells[0].textContent = document.getElementById('edit-ingredient').value;
-        cells[1].textContent = document.getElementById('edit-amount').value;
-        cells[2].textContent = document.getElementById('edit-threshold').value;
-        cells[4].textContent = document.getElementById('edit-by').value;
-
-        // Close the modal
-        const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
-        editModal.hide();
-    });
-</script>
+    </script>
+</body>
+</html>
 {% endblock %}
