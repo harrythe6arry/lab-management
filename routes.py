@@ -1,4 +1,5 @@
 import os
+from app import app
 import psycopg2
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, request
@@ -24,7 +25,6 @@ def inventory():
 @app.route('/')
 def home():
     return render_template('home.html')
-<<<<<<< Updated upstream
 
 @app.route('/task', methods=['GET', 'POST'])
 def task():
@@ -37,8 +37,6 @@ def task():
         return redirect(url_for('home'))
 
     return render_template('task.html')
-=======
->>>>>>> Stashed changes
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
