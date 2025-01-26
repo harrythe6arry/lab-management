@@ -29,3 +29,16 @@ def get_password_by_username(username):
     except psycopg2.Error as e:
         print(f"[ERROR] Failed to fetch password: {e}")
         return None
+
+def get_role_by_username(username):
+    try:
+        with db.get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT role FROM users WHERE name = %s
+                """, (username,))
+                result = cur.fetchone()
+                return result[0] if result else None  # Return role or None
+    except psycopg2.Error as e:
+        print(f"[ERROR] Failed to fetch role: {e}")
+        return None

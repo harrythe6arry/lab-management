@@ -1,33 +1,34 @@
 import os
 from datetime import datetime
-
 import psycopg2
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, url_for, request, jsonify, Blueprint
+from flask import Flask, render_template, redirect, url_for, request, jsonify, Blueprint, session
 from psycopg2 import extras
+from Utils import auth, user
 from Utils.convert_time_zone import get_thailand_time
 
+routes = Blueprint("routes", __name__)
 
-from Utils import auth, user
-from Utils import auth, user, db  # Importing db as a module
+def user_login_required(f):
+    def wrap(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("routes.login"))  # Redirect to login page if not logged in
+        return f(*args, **kwargs)
+    wrap.__name__ = f.__name__  # Preserve function name
+    return wrap
 
-routes = Blueprint("routes", __name__)  # Create a Blueprint
-
-def get_db_connection():
-    conn = psycopg2.connect(host=os.getenv('DB_HOST'),
-                            database=os.getenv('DB_NAME'),
-                            user=os.getenv('DB_USERNAME'),
-                            password=os.getenv('DB_PASSWORD'))
-    cur = conn.cursor()
-    cur.execute("SET timezone = 'Asia/Bangkok';")  # Set timezone to Thailand
-    conn.commit()
-    return conn
-
-app = Flask(__name__)
-
-
+def admin_login_required(f):
+    def wrap(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("routes.login"))  # Redirect to login page if not logged in
+        if user.get_role_by_username(session["user"]) != "Admin":
+            return redirect(url_for("routes.dashboard"))
+        return f(*args, **kwargs)
+    wrap.__name__ = f.__name__ 
+    return wrap
 
 @app.route('/inventory', methods=['GET'])
+@user_login_required
 def view_inventory():
     """Display inventory page with all items"""
     conn = get_db_connection()
@@ -40,6 +41,7 @@ def view_inventory():
     return render_template('inventory.html', inventory_data=inventory_data, now=now)
 
 @app.route('/inventory/add', methods=['POST'])
+@user_login_required
 def add_inventory_item():
     """Handle new item creation"""
     ingredient = request.form.get('ingredient')
@@ -66,6 +68,7 @@ def add_inventory_item():
         conn.close()
 
 @app.route('/inventory/edit', methods=['POST'])
+@user_login_required
 def edit_inventory_item():
 
     item_id = request.form.get('id')
@@ -94,6 +97,7 @@ def edit_inventory_item():
         conn.close()
 
 @app.route('/inventory/delete', methods=['POST'])
+@user_login_required
 def delete_inventory_item():
     """Handle item deletion"""
     try:
@@ -123,9 +127,37 @@ def delete_inventory_item():
 
 @routes.route('/')
 def home():
+    return "Welcome! <a href='/dashboard'>Go to Dashboard</a>"
+
+@routes.route('/dashboard')
+@user_login_required
+def dashboard():
     return render_template('home.html')
 
+@routes.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if auth.login(username, password):
+            print("Login successful")
+            session["user"] = username
+            return redirect(url_for("routes.dashboard"))
+    return render_template('login.html')
+
+@routes.route('/logout')
+@user_login_required
+def logout():
+    session.pop("user", None)
+    return redirect(url_for("routes.login"))
+
+@routes.route('/usermanagement', methods=['GET', 'POST']) # wil have to create page for members and adding
+@admin_login_required
+def add_user():
+    return render_template('users.html')
+
 @routes.route('/task', methods=['GET', 'POST'])
+@user_login_required
 def task():
     if request.method == 'POST':
         date = request.form.get('taskDate')
@@ -137,32 +169,7 @@ def task():
 
     return render_template('task.html')
 
-@routes.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        print(f"Username: {username}, Password: {password}")
-        if auth.login(username, password):
-            print("Login successful")
-        return redirect(url_for('routes.home'))  # Use Blueprint name
-    return render_template('login.html')
-
-@routes.route('/adduser', methods=['GET', 'POST'])
-def add_user():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user.insert_user(username, password, 'Staff')
-    return render_template('signup.html')
-
-@routes.route('/equipment')
-def equipment():
-    conn = db.get_db_connection
-    cur = conn.cursor()
-    cur.execute('SELECT id, name, status, last_cleaned_at, location FROM equipment;')
-    equipment_list = cur.fetchall()
-    cur.close()
-    db.close_db_connection(conn)
-
-    return render_template('equipment.html', equipment_list=equipment_list)
+@routes.route('/inventory', methods=['GET', 'POST'])
+@user_login_required
+def inventory():
+    return render_template('inventory.html')
