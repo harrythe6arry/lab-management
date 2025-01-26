@@ -45,9 +45,10 @@ def logout():
     return redirect(url_for("routes.login"))
 
 @routes.route('/usermanagement', methods=['GET', 'POST']) # wil have to create page for members and adding
-@admin_login_required
-def add_user():
-    return render_template('users.html')
+def user_management():
+    user_role = user.get_role_by_username(session["user"])
+    users_list = user.get_all_users()
+    return render_template('user_management.html', role=user_role, users=users_list)
 
 @routes.route('/task', methods=['GET', 'POST'])
 @user_login_required
@@ -66,7 +67,6 @@ def task():
 @user_login_required
 def inventory():
     return render_template('inventory.html')
-
 
 @routes.route('/inventory', methods=['GET'])
 @user_login_required

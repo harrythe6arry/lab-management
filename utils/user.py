@@ -17,6 +17,20 @@ def insert_user(username, password, role):
         print(f"[ERROR] Failed to insert user: {e}")
         return False
 
+def delete(username):
+    conn = None
+    try:
+        conn = db.get_db_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM users WHERE name = %s", (username,))
+        conn.commit()
+        cur.close()
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        if conn:
+            db.close_db_connection(conn)
+
 def get_password_by_username(username):
     try:
         with db.get_db_connection() as conn:
@@ -42,3 +56,21 @@ def get_role_by_username(username):
     except psycopg2.Error as e:
         print(f"[ERROR] Failed to fetch role: {e}")
         return None
+
+def get_all_users():
+    conn = None
+    users = []
+    try:
+        conn = db.get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, name, role FROM users")
+        rows = cur.fetchall()
+        for row in rows:
+            users.append((row[0], row[1], row[2]))
+        cur.close()
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        if conn:
+            db.close_db_connection(conn)
+    return users
