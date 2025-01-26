@@ -3,7 +3,6 @@ from datetime import datetime
 from psycopg2 import extras
 from Utils import timezone, db
 from routes.auth import user_login_required
-
 inventory_routes = Blueprint("inventory_routes", __name__)
 
 
@@ -26,7 +25,8 @@ def add_inventory_item():
     ingredient = request.form.get('ingredient')
     amount = request.form.get('amount')
     threshold = request.form.get('threshold')
-    by = request.form.get('by')
+    by = session.get('user')
+    print(f"Adding inventory item: {ingredient}, {amount}, {threshold}, {by}")
 
     try:
         conn = db.get_db_connection()
@@ -54,7 +54,7 @@ def edit_inventory_item():
     ingredient = request.form.get('ingredient')
     amount = request.form.get('amount')
     threshold = request.form.get('threshold')
-    by = request.form.get('by')
+    by = session.get('user')
     try:
         conn = db.get_db_connection()
         cur = conn.cursor()
