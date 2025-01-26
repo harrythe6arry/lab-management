@@ -62,11 +62,6 @@ def task():
 
     return render_template('task.html')
 
-@routes.route('/inventory', methods=['GET', 'POST'])
-@user_login_required
-def inventory():
-    return render_template('inventory.html')
-
 
 @routes.route('/inventory', methods=['GET'])
 @user_login_required
