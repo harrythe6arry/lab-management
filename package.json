@@ -1,0 +1,17 @@
+{
+  "name": "lab-management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harrythe6arry/lab-management.git"
+  },
+  "private": true,
+  "dependencies": {
+    "bootstrap": "^5.3.3"
+  }
+}
