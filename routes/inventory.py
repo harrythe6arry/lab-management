@@ -1,8 +1,8 @@
 from flask import render_template, redirect, url_for, request, jsonify, Blueprint, session
 from datetime import datetime
 from psycopg2 import extras
-from utils import timezone, db
-from .auth import user_login_required
+from Utils import timezone, db
+from routes.auth import user_login_required
 
 inventory_routes = Blueprint("inventory_routes", __name__)
 

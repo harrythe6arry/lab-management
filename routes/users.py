@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, request, redirect, url_for, jsonify
-from utils import user
+from Utils import user
 
 users_routes = Blueprint("users_routes", __name__)
 
