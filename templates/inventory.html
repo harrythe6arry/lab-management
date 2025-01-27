@@ -85,10 +85,10 @@
                                 <label class="form-label">Threshold</label>
                                 <input type="number" class="form-control" name="threshold" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Updated By</label>
-                                <input type="text" class="form-control" name="by" required>
-                            </div>
+{#                            <div class="mb-3">#}
+{#                                <label class="form-label">Updated By</label>#}
+{#                                <input type="text" class="form-control" name="by" required>#}
+{#                            </div>#}
                             <button type="submit" class="btn btn-primary">Add Item</button>
                         </form>
                     </div>
@@ -119,10 +119,10 @@
                                 <label class="form-label">Threshold</label>
                                 <input type="number" class="form-control" name="threshold" id="edit-threshold" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Updated By</label>
-                                <input type="text" class="form-control" name="by" id="edit-by" required>
-                            </div>
+{#                            <div class="mb-3">#}
+{#                                <label class="form-label">Updated By</label>#}
+{#                                <input type="text" class="form-control" name="by" id="edit-by" required>#}
+{#                            </div>#}
                             <button type="submit" class="btn btn-warning">Update Item</button>
                         </form>
                     </div>
@@ -170,8 +170,10 @@
                     method: 'POST',
                     body: formData
                 });
+                console.log(response);
 
                 if (response.ok) {
+
                     window.location.reload();
                 } else {
                     alert('Failed to add item');
@@ -251,6 +253,8 @@
                 alert('Failed to delete item');
             }
         });
+
+
     });
 </script>
 

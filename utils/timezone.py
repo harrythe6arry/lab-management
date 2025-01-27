@@ -14,3 +14,9 @@ def convert_utc_to_thailand_time(utc_time):
     if utc_time.tzinfo is None:
         utc_time = pytz.utc.localize(utc_time)  # Assume naive datetime is UTC
     return utc_time.astimezone(THAILAND_TZ)
+
+def convert_utc_to_thailand_time(utc_time):
+    """Convert a UTC datetime object to Thailand timezone."""
+    if utc_time.tzinfo is None:
+        utc_time = pytz.utc.localize(utc_time)  # Assume naive datetime is UTC
+    return utc_time.astimezone(THAILAND_TZ)
