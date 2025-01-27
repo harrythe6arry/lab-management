@@ -1,7 +1,9 @@
+import pytz
 from flask import render_template, redirect, url_for, request, jsonify, Blueprint, session
 from datetime import datetime
 from psycopg2 import extras
 from Utils import timezone, db
+from Utils.timezone import get_thailand_time, convert_utc_to_thailand_time
 from routes.auth import user_login_required
 inventory_routes = Blueprint("inventory_routes", __name__)
 
@@ -15,7 +17,11 @@ def view_inventory():
     cur.execute("SELECT * FROM inventory ORDER BY id DESC;")
     inventory_data = cur.fetchall()
     db.close_db_connection(conn)
-    now = datetime.now()
+
+    for item in inventory_data:
+        item['last_updated'] = convert_utc_to_thailand_time(item['last_updated'])
+
+    now = timezone.convert_utc_to_thailand_time(datetime.now())
     return render_template('inventory.html', inventory_data=inventory_data, now=now)
 
 @inventory_routes.route('/inventory/add', methods=['POST'])
@@ -26,7 +32,7 @@ def add_inventory_item():
     amount = request.form.get('amount')
     threshold = request.form.get('threshold')
     by = session.get('user')
-    print(f"Adding inventory item: {ingredient}, {amount}, {threshold}, {by}")
+    # print(f"Adding inventory item: {ingredient}, {amount}, {threshold}, {by}")
 
     try:
         conn = db.get_db_connection()
