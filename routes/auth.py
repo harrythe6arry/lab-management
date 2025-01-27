@@ -23,14 +23,21 @@ def admin_login_required(f):
 
 @auth_routes.route('/login', methods=['GET', 'POST'])
 def login():
+    error_message = None
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+
         if auth.login(username, password):
             print("Login successful")
             session["user"] = username
             return redirect(url_for("dashboard_routes.dashboard"))
-    return render_template('login.html')
+        else:
+            print("Login failed")
+            error_message = "Invalid username or password"  # Define the error message
+
+    # Pass the error message to the template
+    return render_template('login.html', error=error_message)
 
 @auth_routes.route('/logout')
 def logout():
