@@ -17,17 +17,26 @@ def add_user():
         password = data.get('password')
         role = data.get('role')
         print(f"Adding user: {username}")
-        if user.insert_user(username, password, role):
-            print("User inserted successfully")
-            return jsonify({"message": "User created successfully"}), 201
-        else:
-            return jsonify({"message": "Failed to create user"}), 500
+        try:
+            if user.insert_user(username, password, role):
+                print("User inserted successfully")
+                return jsonify({"message": "User created successfully"}), 201
+            else:
+                return jsonify({"message": "Failed to create user"}), 500
+        except Exception as e:
+            if "UNIQUE constraint failed" in str(e):
+                return jsonify({"message": "Username already exists"}), 400
+            else:
+                return jsonify({"message": "An error occurred"}), 500
     return render_template('add_user.html')
 
 @users_routes.route('/deleteuser', methods=['POST'])
 def delete_user():
     data = request.get_json()
     username = data.get('username')
+    # if the user is trying to delete themselves, return an error
+    if username == session["user"]:
+        return jsonify({"message": "You cannot delete yourself"}), 400
     print(f"Deleting user: {username}")
     if user.delete(username):
         print("User deleted successfully")
