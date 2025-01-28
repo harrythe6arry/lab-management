@@ -10,6 +10,7 @@ app.register_blueprint(tasks.tasks_routes)
 app.register_blueprint(users.users_routes)
 app.register_blueprint(inventory.inventory_routes)
 
+
 app.secret_key = "VERY_SECRET_KEY"  # will defo change this later
 
 if __name__ == "__main__":
