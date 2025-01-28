@@ -55,33 +55,36 @@ def update_task(task_id, name=None, due_date=None, status=None, assigned_to=None
         conn = db.get_db_connection()
         cur = conn.cursor()
 
-        # Build the dynamic SQL query
-        fields = []
+        # Build the query and value list dynamically
+        update_fields = []
         values = []
-
         if name is not None:
-            fields.append("name = %s")
+            update_fields.append("name = %s")
             values.append(name)
-        if due_date is not None:
-            fields.append("due_date = %s")
-            values.append(due_date)
-        if status is not None:
-            fields.append("status = %s")
-            values.append(status)
         if assigned_to is not None:
-            fields.append("assigned_to = %s")
+            update_fields.append("assigned_to = %s")
             values.append(assigned_to)
+        if status is not None:
+            update_fields.append("status = %s")
+            values.append(status)
+        if due_date is not None:
+            update_fields.append("due_date = %s")
+            values.append(due_date)
 
-        # Add `last_updated` timestamp
-        fields.append("last_updated = %s")
-        values.append(timezone.get_thailand_time())
+        # Ensure there's something to update
+        if not update_fields:
+            raise ValueError("No valid fields provided to update")
 
-        # Complete the query
         values.append(task_id)
-        query = f"UPDATE tasks SET {', '.join(fields)} WHERE id = %s"
 
-        cur.execute(query, tuple(values))
+        print(f"update_fields: {update_fields}")
+        print(f"values: {values}")
+        # Build and execute the query
+        query = f"UPDATE tasks SET {', '.join(update_fields)} WHERE id = %s"
+        print(f"Executing query: {query} with values: {values}")
+        cur.execute(query, values)
         conn.commit()
+
     except Exception as e:
         conn.rollback()
         raise e

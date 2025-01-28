@@ -39,6 +39,7 @@ def edit_inventory_item_route():
     threshold = request.form.get('threshold')
     updated_by = session.get('user')
 
+
     try:
         inventory.update_inventory_item(item_id, ingredient, amount, threshold, updated_by)
         return jsonify({'success': True}), 200

@@ -1,4 +1,6 @@
-from flask import Flask, request, jsonify, Blueprint, render_template
+from dataclasses import dataclass
+
+from flask import Flask, request, jsonify, Blueprint, render_template, session
 
 from Utils import tasks
 
@@ -28,3 +30,33 @@ def add_task():
         return jsonify({'error': str(e)}), 500
 
 
+@tasks_routes.route('/tasks/edit', methods=['GET','POST'])
+def edit_task():
+    """Edit an existing task."""
+    task_id = request.form.get('id')
+    name = request.form.get('name')
+    due_date = request.form.get('due_date')
+    status = request.form.get('status')
+    assigned_to = request.form.get('assigned-to')
+
+
+    print(f" task_id: {task_id} name: {name} due_date: {due_date} status: {status} assigned_to: {assigned_to}")
+
+    try:
+        tasks.update_task(task_id, name, due_date, status, assigned_to)
+        return jsonify({'message': 'Task updated successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@tasks_routes.route('/tasks/delete', methods=['POST'])
+def delete_task():
+    """Delete a task."""
+    task_id = request.form.get('id')
+
+    try:
+        tasks.delete_task(task_id)
+        return jsonify({'message': 'Task deleted successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
