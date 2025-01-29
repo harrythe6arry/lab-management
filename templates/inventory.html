@@ -85,10 +85,10 @@
                                 <label class="form-label">Threshold</label>
                                 <input type="number" class="form-control" name="threshold" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Updated By</label>
-                                <input type="text" class="form-control" name="by" required>
-                            </div>
+{#                            <div class="mb-3">#}
+{#                                <label class="form-label">Updated By</label>#}
+{#                                <input type="text" class="form-control" name="by" required>#}
+{#                            </div>#}
                             <button type="submit" class="btn btn-primary">Add Item</button>
                         </form>
                     </div>
@@ -161,10 +161,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             $('#inventoryTable').DataTable({
-                {#"paging": true, // Enable paging#}
+                "paging": false, // Enable paging
                 {#"ordering": true, // Enable sorting#}
-                {#"order": [[3, "desc"]], // Order by Last Updated column#}
-                {#"pageLength": 10, // Set the number of entries to display per page#}
+                "order": [[3, "desc"]], // Order by Last Updated column
+                "pageLength": 2000, // Set the number of entries to display per page
                 {#"searching": true, // Enable search functionality#}
             });
 
