@@ -10,3 +10,5 @@ pytest==7.4.0
 pytz==2024.2
 psycopg2-binary~=2.9.10
 bcrypt~=4.2.1
+
+Werkzeug~=3.1.3
