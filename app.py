@@ -1,6 +1,9 @@
+import os
+
 from flask import Flask
 from routes import auth, dashboard, tasks, users, inventory
-import os
+
+
 
 app = Flask(__name__)
 app.register_blueprint(auth.auth_routes)
