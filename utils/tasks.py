@@ -1,5 +1,5 @@
 from psycopg2 import extras
-from Utils import db, timezone
+from utils import db, timezone
 
 def get_all_tasks():
     """Fetch all tasks from the database."""

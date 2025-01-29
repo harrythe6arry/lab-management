@@ -1,5 +1,5 @@
 from flask import redirect, url_for, Blueprint, session, request, render_template
-from Utils import user, auth
+from utils import user, auth
 
 auth_routes = Blueprint("auth_routes", __name__)
 

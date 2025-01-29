@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from flask import Flask, request, jsonify, Blueprint, render_template, session
 
-from Utils import tasks
+from utils import tasks
 
 app = Flask(__name__)
 

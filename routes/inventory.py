@@ -1,7 +1,6 @@
 from flask import render_template, request, jsonify, session, Blueprint
 from datetime import datetime
-from Utils import timezone
-from Utils import inventory
+from utils import timezone, inventory
 from routes.auth import user_login_required
 
 inventory_routes = Blueprint("inventory_routes", __name__)

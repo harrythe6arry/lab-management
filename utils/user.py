@@ -1,5 +1,5 @@
 import psycopg2
-from Utils import auth, db
+from utils import auth, db
 
 def insert_user(username, password, role):
     hashed_pw = auth.hash_password(password)  # Use hashed_password to generate the hash

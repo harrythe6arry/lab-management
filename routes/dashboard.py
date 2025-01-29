@@ -1,6 +1,6 @@
 from flask import render_template, Blueprint
 from psycopg2 import extras
-from Utils import db
+from utils import db
 from routes.auth import user_login_required
 
 dashboard_routes = Blueprint("dashboard_routes", __name__)
