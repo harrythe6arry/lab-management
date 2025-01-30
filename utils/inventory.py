@@ -15,25 +15,6 @@ def get_all_inventory_items():
 
     return inventory_data
 
-# def add_inventory_item(ingredient, amount, threshold, updated_by):
-#     """Add a new item to the inventory."""
-#     try:
-#         conn = db.get_db_connection()
-#         cur = conn.cursor()
-#         cur.execute("""
-#             INSERT INTO inventory (ingredient, amount, threshold, updated_by)
-#             VALUES (%s, %s, %s, %s)
-#             RETURNING id;
-#         """, (ingredient, amount, threshold, updated_by))
-#         new_id = cur.fetchone()[0]
-#         conn.commit()
-#         return new_id
-#     except Exception as e:
-#         conn.rollback()
-#         raise e
-#     finally:
-#         db.close_db_connection(conn)
-
 def add_inventory_item(ingredient, amount, threshold, updated_by):
     """Add a new item to the inventory, summing amounts for duplicate ingredients."""
     try:
