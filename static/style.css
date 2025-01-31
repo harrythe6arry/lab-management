@@ -93,15 +93,3 @@ a:hover {
     z-index: 9999;
     pointer-events: none; /* Prevent interaction with the page behind */
 }
-
-.loading-message {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-    margin: 0;
-}
-
-
-
-

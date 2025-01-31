@@ -14,9 +14,8 @@ def get_available_rooms():
     available_rooms = booking.get_available_rooms(selected_date, timeslot)
     print(available_rooms)
     if available_rooms:
-        return jsonify({'rooms': [room[1] for room in available_rooms]})
+        return jsonify({'rooms': [{'id': room[0], 'name': room[1]} for room in available_rooms]})
     return jsonify({'rooms': []})
-
 
 @booking_routes.route('/api/available/equipments', methods=['GET'])
 def get_available_equipments():
@@ -25,22 +24,19 @@ def get_available_equipments():
     available_equipment = booking.get_available_equipment(selected_date, timeslot)
     print(available_equipment)
     if available_equipment:
-        return jsonify({'equipment': [eq[1] for eq in available_equipment]})
-    return jsonify({'equipment': []})
+        return jsonify({'equipments': [{'id': eq[0], 'name': eq[1]} for eq in available_equipment]})
+    return jsonify({'equipments': []})
 
-@booking_routes.route('/api/validate', methods=['POST'])
+@booking_routes.route('/api/validate/quantity', methods=['GET'])
 def validate_quantity():
-    data = request.json
-    equipment_id = data['equipment_id']
-    quantity = data['quantity']
-    selected_date = data['date']
-    timeslot = data['timeslot']
+    equipment_id = request.args.get('equipment_id')
+    quantity = int(request.args.get('quantity'))
+    selected_date = request.args.get('date')
+    timeslot = request.args.get('timeslot')
 
-    # Query to validate quantity
-    equipment = validate_quantity((equipment_id, selected_date, timeslot))
-    if equipment and equipment.total_quantity >= quantity:
-        return jsonify({'valid': True})
-    return jsonify({'valid': True})
+    is_available = booking.validate_equipment_quantity(equipment_id, quantity, selected_date, timeslot)
+    print(is_available)
+    return jsonify({'isAvailable': is_available})
 
 
 @booking_routes.route('/api/book', methods=['POST'])
@@ -49,23 +45,14 @@ def submit_booking():
     name = data['name']
     date = data['date']
     timeslot = data['timeslot']
-    room = data['room']
-    equipment = data['equipment']
+    room_id = data['room_id']
+    room_name = data['room_name']
+    equipments = data['equipments']
 
-    # Deduct the booked quantity of each equipment
-    for eq in equipment:
-        equipment_id = eq['name']
-        quantity = eq['quantity']
+    booking_result = booking.book_room_and_equipment(name, room_id, room_name, equipments, date, timeslot)
 
-        # Call the backend function to check and deduct the equipment
-        result = booking.deduct_equipment_quantity(equipment_id, quantity, date, timeslot)
-        if not result:
-            return jsonify({'success': False, 'message': f"Not enough {equipment_id} available"})
+    if booking_result is None:
+        return jsonify({'error': 'Booking failed'}), 400
 
-    # Call the backend function to book the room and equipment
-    booking_result = booking.book_room_and_equipment(name, room, equipment, date, timeslot)
+    return jsonify(booking_result)
 
-    if booking_result:
-        return jsonify({'success': True})
-    else:
-        return jsonify({'success': False, 'message': 'Booking failed. Please try again.'})
