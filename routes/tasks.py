@@ -1,7 +1,9 @@
+from datetime import datetime, timezone
+
 from flask import Flask, request, jsonify, Blueprint, render_template, session
 
 from utils import tasks
-
+from utils import timezone
 app = Flask(__name__)
 
 tasks_routes = Blueprint("tasks_routes", __name__)
@@ -10,7 +12,9 @@ tasks_routes = Blueprint("tasks_routes", __name__)
 def fetch_tasks():
     """Fetch all tasks."""
     task = tasks.get_all_tasks()
-    return render_template('tasks.html', task_data=task)
+    now = timezone.convert_utc_to_thailand_time(datetime.now())
+
+    return render_template('tasks.html', task_data=task, today=now)
 
 @tasks_routes.route('/tasks/add', methods=['GET', 'POST'])
 def add_task():
@@ -58,3 +62,19 @@ def delete_task():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+
+@tasks_routes.route('/tasks/update-status', methods=['POST'])
+def update_task_status():
+    data = request.get_json()  # Access JSON data
+    task_id = data.get('id')
+    status = data.get('status')
+
+    print(f"Updating task {task_id} status to {status}")
+
+    try:
+        tasks.update_task_status(task_id, status=status)
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500

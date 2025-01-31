@@ -67,3 +67,41 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.spinner {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   z-index: 10;
+}
+.disabled {
+   pointer-events: none;
+   opacity: 0.5;
+}
+
+.full-page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    pointer-events: none; /* Prevent interaction with the page behind */
+}
+
+.loading-message {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin: 0;
+}
+
+
+
+
