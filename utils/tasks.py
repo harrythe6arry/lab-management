@@ -10,6 +10,7 @@ def get_all_tasks():
     db.close_db_connection(conn)
 
     # Convert UTC timestamps to Thailand time and format dates
+     # add task that is overduem causes duplicates
     for task in tasks:
         if task['created_at']:
             task['created_at'] = timezone.convert_utc_to_thailand_time(task['created_at'])
@@ -26,11 +27,23 @@ def get_all_tasks():
         else:
             task['due_date'] = "Not Set"
 
+        if task['due_date'] < timezone.get_thailand_time():
+            task['status'] = 'Overdue'
+            update_task_status(task['id'], 'Overdue')
+
+
+
+
+
+
     return tasks
 
 
 def add_task(name, due_date, status="Not Started", assigned_to=None):
     """Add a new task to the database."""
+
+
+
     try:
         conn = db.get_db_connection()
         cur = conn.cursor()
@@ -49,9 +62,53 @@ def add_task(name, due_date, status="Not Started", assigned_to=None):
         db.close_db_connection(conn)
 
 
+# def update_task(task_id, name=None, due_date=None, status=None, assigned_to=None):
+#     """Update an existing task."""
+#     try:
+#         conn = db.get_db_connection()
+#         cur = conn.cursor()
+#
+#         # Build the query and value list dynamically
+#         update_fields = []
+#         values = []
+#         if name is not None:
+#             update_fields.append("name = %s")
+#             values.append(name)
+#         if assigned_to is not None:
+#             update_fields.append("assigned_to = %s")
+#             values.append(assigned_to)
+#         if status is not None:
+#             update_fields.append("status = %s")
+#             values.append(status)
+#         if due_date is not None:
+#             update_fields.append("due_date = %s")
+#             values.append(due_date)
+#
+#         # Ensure there's something to update
+#         if not update_fields:
+#             raise ValueError("No valid fields provided to update")
+#
+#         values.append(task_id)
+#
+#
+#
+#         print(f"update_fields: {update_fields}")
+#         print(f"values: {values}")
+#         # Build and execute the query
+#         query = f"UPDATE tasks SET {', '.join(update_fields)} WHERE id = %s"
+#         print(f"Executing query: {query} with values: {values}")
+#         cur.execute(query, values)
+#         conn.commit()
+#
+#     except Exception as e:
+#         conn.rollback()
+#         raise e
+#     finally:
+#         db.close_db_connection(conn)
 def update_task(task_id, name=None, due_date=None, status=None, assigned_to=None):
     """Update an existing task."""
     try:
+        print(f"Updating task ID: {task_id} with name: {name}, due_date: {due_date}, status: {status}, assigned_to: {assigned_to}")
         conn = db.get_db_connection()
         cur = conn.cursor()
 
@@ -77,19 +134,22 @@ def update_task(task_id, name=None, due_date=None, status=None, assigned_to=None
 
         values.append(task_id)
 
-        print(f"update_fields: {update_fields}")
-        print(f"values: {values}")
+        print(f"Update query fields: {update_fields}")
+        print(f"Update query values: {values}")
+
         # Build and execute the query
         query = f"UPDATE tasks SET {', '.join(update_fields)} WHERE id = %s"
         print(f"Executing query: {query} with values: {values}")
         cur.execute(query, values)
         conn.commit()
-
+        print(f"Task ID: {task_id} updated successfully")
     except Exception as e:
+        print(f"Error in update_task: {e}")
         conn.rollback()
-        raise e
+        raise
     finally:
         db.close_db_connection(conn)
+
 
 
 def delete_task(task_id):
@@ -105,3 +165,38 @@ def delete_task(task_id):
         raise e
     finally:
         db.close_db_connection(conn)
+
+
+import psycopg2
+
+def update_task_status(task_id, status):
+    try:
+
+
+        # Prepare the update query
+        conn = db.get_db_connection()
+        cur = conn.cursor()
+        query = "UPDATE tasks SET status = %s WHERE id = %s"
+        values = (status, task_id)
+
+        # Execute the query
+        cur.execute(query, values)
+
+        # Commit the transaction to save the changes
+        conn.commit()
+
+        # Check how many rows were updated
+        if cur.rowcount > 0:
+            print(f"Task ID {task_id} updated successfully with status {status}")
+        else:
+            print(f"No task found with ID {task_id} to update.")
+
+    except Exception as e:
+        print(f"Error updating task: {e}")
+
+    finally:
+        # Close the cursor and connection
+        cur.close()
+        conn.close()
+        db.close_db_connection(conn)
+

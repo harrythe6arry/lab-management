@@ -9,93 +9,209 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Task Management</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     </head>
-    <body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Task Management</h1>
+    <body class="bg-gray-100">
 
-        <!-- Add Task Button -->
-        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add Task</button>
 
-        <!-- Task Table -->
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Task Name</th>
-                <th>Assigned to</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for task in task_data %}
-                <tr>
-                    <td>{{ task.name }}</td>
-                    <td>{{ task.assigned_to }}</td>
-                    <td>
-                        {% if task.due_date %}
-                            {{ task.due_date.strftime('%Y-%m-%d %H:%M:%S') }}
-                        {% else %}
-                            N/A
-                        {% endif %}
-                    </td>
+    <div class="container mx-auto p-4">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Task Management</h1>
+            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-300"
+                    data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                <i class="fas fa-plus mr-2"></i>Add Task
+            </button>
+        </div>
 
-                    <td>{{ task.status }}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm edit-btn me-2"
-                                data-bs-toggle="modal"
-                                data-bs-target="#editTaskModal"
-                                data-id="{{ task.id }}"
-                                data-name="{{ task.name }}"
-                                data-due_date="{{ task.due_date }}"
-                                data-status="{{ task.status }}">
-                            Edit
-                        </button>
-                        <button class="btn btn-danger btn-sm delete-btn"
-                                data-bs-toggle="modal"
-                                data-bs-target="#deleteConfirmModal"
-                                data-id="{{ task.id }}"
-                                data-name="{{ task.name }}">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+
+        <!-- Task Boards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Not Started -->
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Not Started</h2>
+                <div id="not-started" class="space-y-3">
+                    {% for task in task_data if task.status == "Not Started" %}
+                        <div class="task bg-gray-50 p-3 rounded-lg shadow-sm cursor-move" data-id="{{ task.id }}">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-800">{{ task.name }}</span>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-500 hover:text-blue-700 edit-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editTaskModal"
+                                            data-id="{{ task.id }}"
+                                            data-name="{{ task.name }}"
+                                            data-due_date="{{ task.due_date }}"
+                                            data-status="{{ task.status }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-500 hover:text-red-700 delete-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteConfirmModal"
+                                            data-id="{{ task.id }}"
+                                            data-name="{{ task.name }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-500 mt-2">
+                                <span>Assigned to: {{ task.assigned_to }}</span><br>
+                                <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Pending -->
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Pending</h2>
+                <div id="pending" class="space-y-3">
+                    {% for task in task_data if task.status == "Pending" %}
+                        <div class="task bg-yellow-50 p-3 rounded-lg shadow-sm cursor-move" data-id="{{ task.id }}">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-800">{{ task.name }}</span>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-500 hover:text-blue-700 edit-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editTaskModal"
+                                            data-id="{{ task.id }}"
+                                            data-name="{{ task.name }}"
+                                            data-due_date="{{ task.due_date }}"
+                                            data-status="{{ task.status }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-500 hover:text-red-700 delete-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteConfirmModal"
+                                            data-id="{{ task.id }}"
+                                            data-name="{{ task.name }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-500 mt-2">
+                                <span>Assigned to: {{ task.assigned_to }}</span><br>
+                                <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Completed -->
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Completed</h2>
+                <div id="completed" class="space-y-3">
+                    {% for task in task_data if task.status == "Completed" %}
+                        <div class="task bg-green-50 p-3 rounded-lg shadow-sm cursor-move " data-id="{{ task.id }}">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-800">{{ task.name }}</span>
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-500 hover:text-blue-700 edit-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editTaskModal"
+                                            data-id="{{ task.id }}"
+                                            data-name="{{ task.name }}"
+                                            data-due_date="{{ task.due_date }}"
+                                            data-status="{{ task.status }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-500 hover:text-red-700 delete-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteConfirmModal"
+                                            data-id="{{ task.id }}"
+                                            data-name="{{ task.name }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-500 mt-2">
+                                <span>Assigned to: {{ task.assigned_to }}</span><br>
+                                <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-4 mt-10">
+            <h2 class="text-xl font-semibold mb-10 text-gray-700">Overdue</h2>
+            <div id="overdue" class="space-y-3">
+                {% for task in task_data if task.status == "Overdue" %}
+                    <div class="task bg-red-50 p-3 rounded-lg shadow-sm cursor-move " data-id="{{ task.id }}">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-800">{{ task.name }}</span>
+                            <div class="flex space-x-2">
+                                <button class="text-blue-500 hover:text-blue-700 edit-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editTaskModal"
+                                        data-id="{{ task.id }}"
+                                        data-name="{{ task.name }}"
+                                        data-due_date="{{ task.due_date }}"
+                                        data-status="{{ task.status }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-700 delete-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteConfirmModal"
+                                        data-id="{{ task.id }}"
+                                        data-name="{{ task.name }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500 mt-2">
+                            <span>Assigned to: {{ task.assigned_to }}</span><br>
+                            <span> Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
 
         <!-- Add Task Modal -->
         <div class="modal fade" id="addTaskModal" tabindex="-1">
             <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add New Task</h5>
+                <div class="modal-content bg-white rounded-lg shadow-xl">
+                    <div class="modal-header p-4 border-b">
+                        <h5 class="text-xl font-semibold">Add New Task</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body p-4">
                         <form id="addTaskForm">
-                            <div class="mb-3">
-                                <label class="form-label">Task Name</label>
-                                <input type="text" class="form-control" name="name" required>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Task Name</label>
+                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                       name="name" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Due Date</label>
-                                <input type="date" class="form-control" name="due_date" required>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Due Date</label>
+                                <input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                       name="due_date" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Status</label>
-                                <select class="form-control" name="status" required>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Status</label>
+                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" name="status"
+                                        required>
+                                    <option value="Not Started">Not Started</option>
                                     <option value="Pending">Pending</option>
                                     <option value="Completed">Completed</option>
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Assigned To</label>
-                                <input type="text" class="form-control" name="assigned_to" required>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Assigned To</label>
+                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                       name="assigned_to" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">Add Task</button>
+                            <button type="submit"
+                                    class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-300">
+                                Add Task
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -131,7 +247,8 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Assigned To</label>
-                                <input type="text" class="form-control" name="assigned-to" id="edit-assigned-to" required>
+                                <input type="text" class="form-control" name="assigned-to" id="edit-assigned-to"
+                                       required>
                             </div>
                             <button type="submit" class="btn btn-warning">Update Task</button>
                         </form>
@@ -160,112 +277,174 @@
             </div>
         </div>
     </div>
-    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Initialize modals
-        const addTaskModal = new bootstrap.Modal('#addTaskModal');
-        const editTaskModal = new bootstrap.Modal('#editTaskModal');
-        const deleteModal = new bootstrap.Modal('#deleteConfirmModal');  // Use correct ID here
-         let currentDeleteItem = {id: null, name: null};
+    <script>
 
-        // Add Task Form Submit Handler
-        document.getElementById('addTaskForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
+        document.addEventListener('DOMContentLoaded', function () {
+            const editTaskModal = new bootstrap.Modal('#editTaskModal');
+            const deleteModal = new bootstrap.Modal('#deleteConfirmModal');  // Use correct ID here
+            let currentDeleteItem = {id: null, name: null};
 
-            try {
-                const response = await fetch('/tasks/add', {
-                    method: 'POST',
-                    body: formData,
-                });
+            // Add Task Form Submit Handler
+            document.getElementById('addTaskForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
 
-                if (response.ok) {
-                    window.location.reload();
-                } else {
-                    console.log(response);
+                try {
+                    const response = await fetch('/tasks/add', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        console.log(response);
+                        alert('Failed to add task.');
+                    }
+                } catch (error) {
+                    console.error('Add Task Error:', error);
                     alert('Failed to add task.');
                 }
-            } catch (error) {
-                console.error('Add Task Error:', error);
-                alert('Failed to add task.');
-            }
-        });
-
-        // Edit Task Button Click Handler
-        document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                document.getElementById('edit-id').value = this.dataset.id;
-                document.getElementById('edit-name').value = this.dataset.name;
-                document.getElementById('edit-due-date').value = this.dataset.due_date;
-                document.getElementById('edit-status').value = this.dataset.status;
-                document.getElementById('edit-assigned-to').value = this.dataset.assigned_to;
             });
-        });
 
-        // Edit Task Form Submit Handler
-        document.getElementById('editTaskForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-
-            try {
-                const response = await fetch('/tasks/edit', {
-                    method: 'POST',
-                    body: formData,
+            // Edit Task Button Click Handler
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    document.getElementById('edit-id').value = this.dataset.id;
+                    document.getElementById('edit-name').value = this.dataset.name;
+                    document.getElementById('edit-due-date').value = this.dataset.due_date;
+                    document.getElementById('edit-status').value = this.dataset.status;
+                    document.getElementById('edit-assigned-to').value = this.dataset.assigned_to;
                 });
+            });
 
-                if (response.ok) {
-                    window.location.reload();
-                } else {
-                    console.log(response);
+            // Edit Task Form Submit Handler
+            document.getElementById('editTaskForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                try {
+                    const response = await fetch('/tasks/edit', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        console.log(response);
+                        alert('Failed to update task.');
+                    }
+                } catch (error) {
+                    console.error('Edit Task Error:', error);
                     alert('Failed to update task.');
                 }
-            } catch (error) {
-                console.error('Edit Task Error:', error);
-                alert('Failed to update task.');
-            }
-        });
-
-        // Delete Button Click Handler
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                currentDeleteItem = {
-                    id: this.dataset.id,
-                    name: this.dataset.name
-                };
-                document.getElementById('deleteItemName').textContent = currentDeleteItem.name;
-                document.getElementById('deleteItemId').value = currentDeleteItem.id;
             });
-        });
 
-        // Confirm Delete Button Handler
-        document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
-            try {
-                const response = await fetch('/tasks/delete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `id=${encodeURIComponent(currentDeleteItem.id)}`
+
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    currentDeleteItem = {
+                        id: this.dataset.id,
+                        name: this.dataset.name
+                    };
+                    document.getElementById('deleteItemName').textContent = currentDeleteItem.name;
+                    document.getElementById('deleteItemId').value = currentDeleteItem.id;
                 });
+            });
 
-                if (response.ok) {
-                    deleteModal.hide();  // Close the modal after successful delete
-                    window.location.reload();
-                } else {
-                    const error = await response.json();
-                    alert(`Error: ${error.error}`);
+            document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
+                try {
+                    const response = await fetch('/tasks/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `id=${encodeURIComponent(currentDeleteItem.id)}`
+                    });
+
+                    if (response.ok) {
+                        deleteModal.hide();  // Close the modal after successful delete
+                        window.location.reload();
+                    } else {
+                        const error = await response.json();
+                        alert(`Error: ${error.error}`);
+                    }
+                } catch (error) {
+                    console.error('Delete Error:', error);
+                    alert('Failed to delete item');
                 }
-            } catch (error) {
-                console.error('Delete Error:', error);
-                alert('Failed to delete item');
+            });
+
+            // Initialize Sortable for drag-and-drop
+            const boards = ['not-started', 'pending', 'completed'];
+
+            async function updateTaskStatuses() {
+                for (const boardId of boards) {
+                    const board = document.getElementById(boardId);
+                    if (board) {
+                        new Sortable(board, {
+                            group: 'tasks',
+                            animation: 150,
+                            onEnd: async function (evt) {
+                                const taskElement = evt.item;
+                                const taskId = taskElement.dataset.id;
+                                const newStatus = getStatusFromBoard(evt.to.id);  // You need to define getStatusFromBoard()
+
+                                try {
+                                    const response = await fetch('/tasks/update-status', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            id: taskId,
+                                            status: newStatus,
+                                        })
+                                    });
+
+                                    if (response.ok) {
+                                        window.location.reload();
+                                    } else {
+                                        console.log(response);
+                                        alert('Failed to update task status.');
+                                    }
+                                } catch (error) {
+                                    console.error('Update Status Error:', error);
+                                    alert('Failed to update task status.');
+                                }
+                            }
+                        });
+                    }
+                }
             }
+            // Call updateTaskStatuses once the page is loaded
+         function getStatusFromBoard(boardId) {
+                switch (boardId) {
+                    case 'not-started':
+                        return 'Not Started';
+                    case 'pending':
+                        return 'Pending';
+                    case 'completed':
+                        return 'Completed';
+
+                    default:
+                        return 'Not Started';
+                }
+            }
+
+
+            updateTaskStatuses();
+
         });
-    });
-</script>
+
+
+    </script>
 
 
     </body>
     </html>
 {% endblock %}
+
