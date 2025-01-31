@@ -42,10 +42,20 @@ def validate_quantity():
 @booking_routes.route('/api/book', methods=['POST'])
 def submit_booking():
     data = request.json
+    print(data)
     name = data['name']
     date = data['date']
     timeslot = data['timeslot']
-    room_id = data['room_id']
+    room_id = data['room']
     equipments = data['equipments']
 
-    return booking.book_room_and_equipment(name, room_id, equipments, date, timeslot)
+    booked_room_name, booked_equipments = booking.book_room_and_equipment(name, room_id, equipments, date, timeslot)
+
+    if booked_room_name is None | booked_equipments is None:
+        return jsonify({'error': 'Booking failed'}), 400
+
+    return jsonify({
+        "room_name": booked_room_name,
+        "equipment_bookings": [{"equipment_name": eq_name, "quantity": qty} for eq_name, qty in booked_equipments]
+    })
+
