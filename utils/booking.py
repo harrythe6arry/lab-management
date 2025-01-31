@@ -64,3 +64,38 @@ def validate_equipment_quantity(equipment_id, quantity, selected_date, timeslot)
     except psycopg2.Error as e:
         print(f"[ERROR] Failed to validate quantity: {e}")
         return None
+
+
+def book_room_and_equipment(name, room_id, room_name, equipments, date, timeslot):
+    try:
+        with db.get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO bookings (name, type, date, time_slot, quantity, item_id)
+                    VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;
+                """, (name, "room", date, timeslot, 1, room_id))
+
+                equipment_details = []
+                for eq in equipments:
+                    equipment_name, equipment_id, quantity = eq
+                    cur.execute("""
+                        INSERT INTO bookings (name, type, date, time_slot, quantity, item_id)
+                        VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;
+                    """, (name, "equipment", date, timeslot, quantity, equipment_id))
+
+                    equipment_details.append({
+                        'name': equipment_name,
+                        'quantity': quantity
+                    })
+                    print(equipment_details)
+                conn.commit()
+
+                return {
+                    'room_name': room_name,
+                    'equipment_booking_details': equipment_details
+                }
+
+    except psycopg2.Error as e:
+        print(f"[ERROR] Failed to book room and equipment: {e}")
+        return None
+
