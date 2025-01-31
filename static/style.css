@@ -67,3 +67,10 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+
+.loading-container {
+    display: none;
+    color: #007bff;
+    font-weight: bold;
+}

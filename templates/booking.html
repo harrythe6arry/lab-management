@@ -1,189 +1,1 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        .equipment-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .equipment-item label {
-            margin-right: 15px;
-        }
-
-        .equipment-item input {
-            width: 100px;  /* Adjust width to make input compact */
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            font-weight: bold;
-        }
-
-        .btn {
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1 class="my-5 text-center">Booking Form</h1>
-        <form id="booking-form">
-            <!-- Name Input -->
-            <div class="form-group">
-                <label for="name">Your Name:</label>
-                <input type="text" class="form-control" id="name" required placeholder="Enter your name">
-            </div>
-
-            <!-- Date Input -->
-            <div class="form-group">
-                <label for="date">Booking Date:</label>
-                <input type="date" class="form-control" id="date" min="{{ today }}" required>
-            </div>
-
-            <!-- Time Slot Input -->
-            <div class="form-group">
-                <label for="timeslot">Select Time Slot:</label>
-                <select class="form-control" id="timeslot" required>
-                    <option value="">Select Time Slot</option>
-                    <option value="09:00-09:30">09:00-09:30</option>
-                    <option value="09:30-10:00">09:30-10:00</option>
-                    <option value="10:00-10:30">10:00-10:30</option>
-                    <option value="10:30-11:00">10:30-11:00</option>
-                    <option value="11:00-11:30">11:00-11:30</option>
-                    <option value="11:30-12:00">11:30-12:00</option>
-                    <option value="12:00-12:30">12:00-12:30</option>
-                    <option value="12:30-13:00">12:30-13:00</option>
-                    <option value="13:00-13:30">13:00-13:30</option>
-                    <option value="13:30-14:00">13:30-14:00</option>
-                    <option value="14:00-14:30">14:00-14:30</option>
-                    <option value="14:30-15:00">14:30-15:00</option>
-                    <option value="15:00-15:30">15:00-15:30</option>
-                    <option value="15:30-16:00">15:30-16:00</option>
-                    <option value="16:00-16:30">16:00-16:30</option>
-                    <option value="16:30-17:00">16:30-17:00</option>
-                    <option value="17:00-17:30">17:00-17:30</option>
-                    <option value="17:30-18:00">17:30-18:00</option>
-                </select>
-            </div>
-
-            <!-- Room Selection -->
-            <div class="form-group">
-                <label for="room">Select Room:</label>
-                <select class="form-control" id="room" required>
-                    <option value="">Select Room</option>
-                </select>
-            </div>
-
-            <!-- Equipment List -->
-            <div class="form-group" id="equipment-list">
-                <label>Equipment:</label>
-                <!-- Equipment list will be dynamically populated -->
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary">Submit Booking</button>
-        </form>
-    </div>
-
-    <script>
-        // Get today's date for the date input validation
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById("date").min = today;
-
-        // Fetch available rooms and equipment
-        function fetchAvailableRooms(date, timeslot) {
-            $.get(`/api/available/rooms?date=${date}&timeslot=${timeslot}`, function(data) {
-                let roomOptions = '<option value="">Select Room</option>';
-                data.rooms.forEach(function(room) {
-                    roomOptions += `<option value="${room}">${room}</option>`;
-                });
-                $('#room').html(roomOptions);
-            });
-        }
-
-        function fetchAvailableEquipment(date, timeslot) {
-            $.get(`/api/available/equipments?date=${date}&timeslot=${timeslot}`, function(data) {
-                let equipmentList = '';
-                data.equipment.forEach(function(equipment) {
-                    equipmentList += `
-                        <div class="equipment-item">
-                            <label for="quantity-${equipment}">${equipment}</label>
-                            <input type="number" class="form-control" id="quantity-${equipment}" data-equipment="${equipment}" min="1" placeholder="Qty" oninput="checkQuantity('${equipment}')">
-                        </div>
-                    `;
-                });
-                $('#equipment-list').html(equipmentList);
-            });
-        }
-
-        // Check and update quantity input logic
-        function checkQuantity(equipment) {
-            const quantity = $(`#quantity-${equipment}`).val();
-            if (quantity > 1) {
-                // Optional: Hide extra controls when quantity is more than 1
-                $(`#equipment-${equipment}`).find('input[type="checkbox"]').hide();
-            }
-        }
-
-        // Submit booking
-        $('#booking-form').submit(function(event) {
-            event.preventDefault();
-
-            const name = $('#name').val();
-            const date = $('#date').val();
-            const timeslot = $('#timeslot').val();
-            const room = $('#room').val();
-            const equipment = [];
-
-            // Collect equipment and quantities
-            $('#equipment-list .equipment-item').each(function() {
-                const equipmentName = $(this).find('label').text();
-                const quantity = $(this).find('input[type="number"]').val();
-
-                if (quantity > 0) {
-                    equipment.push({ name: equipmentName, quantity: parseInt(quantity) });
-                }
-            });
-
-            // Send data to backend
-            $.ajax({
-                type: 'POST',
-                url: '/api/book',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    name: name,
-                    date: date,
-                    timeslot: timeslot,
-                    room: room,
-                    equipment: equipment
-                }),
-                success: function(response) {
-                    if (response.success) {
-                        alert('Booking Successful!');
-                    } else {
-                        alert('Booking Failed. Try Again!');
-                    }
-                }
-            });
-        });
-
-        // Update room and equipment availability on change
-        $('#date, #timeslot').change(function() {
-            const date = $('#date').val();
-            const timeslot = $('#timeslot').val();
-            fetchAvailableRooms(date, timeslot);
-            fetchAvailableEquipment(date, timeslot);
-        });
-    </script>
-</body>
-</html>
+{% extends "base.html" %}<!DOCTYPE html><html lang="en">{% block title %}Booking{% endblock %}{% block content %}<head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Booking</title>    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    <style>        .equipment-item {            display: flex;            align-items: center;            margin-bottom: 10px;        }        .equipment-item label {            margin-right: 15px;        }        .equipment-item input {            width: 100px;        }        .form-group {            margin-bottom: 20px;        }        .form-group label {            font-weight: bold;        }        .btn {            width: 100%;        }        .alert {            margin-top: 20px;        }        .loading {            display: none;            color: #007bff;            font-weight: bold;        }        .validation-message {            margin-left: 10px;            font-size: 15px;        }    </style></head><body>    <div class="container">        <h1 class="my-5 text-center">Booking Form</h1>        <form id="booking-form">            <div class="form-group">                <label for="name">Booking Name:</label>                <input type="text" class="form-control" id="name" required placeholder="Enter your booking name">            </div>            <!-- Date Input -->            <div class="form-group">                <label for="date">Booking Date:</label>                <input type="date" class="form-control" id="date" required>            </div>            <!-- Time Slot Input -->            <div class="form-group">                <label for="timeslot">Select Time Slot:</label>                <select class="form-control" id="timeslot" required>                    <option value="">Select Time Slot</option>                    <option value="09:00-09:30">09:00-09:30</option>                    <option value="09:30-10:00">09:30-10:00</option>                    <option value="10:00-10:30">10:00-10:30</option>                    <option value="10:30-11:00">10:30-11:00</option>                    <option value="11:00-11:30">11:00-11:30</option>                    <option value="11:30-12:00">11:30-12:00</option>                    <option value="12:00-12:30">12:00-12:30</option>                    <option value="12:30-13:00">12:30-13:00</option>                    <option value="13:00-13:30">13:00-13:30</option>                    <option value="13:30-14:00">13:30-14:00</option>                    <option value="14:00-14:30">14:00-14:30</option>                    <option value="14:30-15:00">14:30-15:00</option>                    <option value="15:00-15:30">15:00-15:30</option>                    <option value="15:30-16:00">15:30-16:00</option>                    <option value="16:00-16:30">16:00-16:30</option>                    <option value="16:30-17:00">16:30-17:00</option>                    <option value="17:00-17:30">17:00-17:30</option>                    <option value="17:30-18:00">17:30-18:00</option>                </select>            </div>            <!-- Room Selection -->            <div class="form-group">                <label for="room">Select Room:</label>                <select class="form-control" id="room" required disabled>                    <option value="">Select Room</option>                </select>                <div class="loading" id="room-loading">Loading rooms...</div>            </div>            <!-- Equipment List -->            <div class="form-group" id="equipment-list">                <label>Equipment:</label>                <div class="loading" id="equipment-loading">Loading equipment...</div>            </div>            <!-- Submit Button -->            <button type="submit" class="btn btn-primary">Submit Booking</button>            <!-- Feedback Messages -->            <div id="feedback" class="alert" style="display: none;"></div>        </form>    </div>    <script>        $(document).ready(function () {            const today = new Date();            const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD            $('#date').attr('min', todayStr); // Prevent past dates            function filterTimeSlots() {                const selectedDate = $('#date').val();                const currentTime = new Date();                const currentHour = currentTime.getHours();                const currentMinute = currentTime.getMinutes();                $('#timeslot option').each(function () {                    const timeRange = $(this).val().split('-')[0]; // Get start time (e.g., "09:00" from "09:00-09:30")                    const [hour, minute] = timeRange.split(':').map(Number);                    if (selectedDate === todayStr && (hour < currentHour || (hour === currentHour && minute < currentMinute))) {                        $(this).prop('disabled', true).hide();                    } else {                        $(this).prop('disabled', false).show();                    }                });            }            $('#date').change(function () {                filterTimeSlots();            });            filterTimeSlots();            // Fetch rooms & equipment when date/time changes            $('#date, #timeslot').change(function () {                const date = $('#date').val();                const timeslot = $('#timeslot').val();                if (date && timeslot) {                    fetchAvailableRooms(date, timeslot);                    fetchAvailableEquipment(date, timeslot);                } else {                    $('#room').html('<option value="">Select Room</option>').prop('disabled', true);                    $('#equipment-list').html('');                }            });            function fetchAvailableRooms(date, timeslot) {                $('#room').prop('disabled', true);                $('#room-loading').show();                $.get(`/api/available/rooms?date=${date}&timeslot=${timeslot}`)                    .done(function (data) {                        let roomOptions = '<option value="">Select Room</option>';                        data.rooms.forEach(function (room) {                            roomOptions += `<option value="${room.name}">${room.name}</option>`;                        });                        $('#room').html(roomOptions).prop('disabled', false);                    })                    .always(function () {                        $('#room-loading').hide();                    });            }            function fetchAvailableEquipment(date, timeslot) {                $('#equipment-list').html('');                $('#equipment-loading').show();                $.get(`/api/available/equipments?date=${date}&timeslot=${timeslot}`)                    .done(function (data) {                        let equipmentList = '';                        data.equipments.forEach(function (equipments) {                            equipmentList += `                                <div class="equipment-item">                                    <label for="quantity-${equipments.id}">${equipments.name}</label>                                    <input type="number" class="form-control" id="quantity-${equipments.id}" data-equipment-id="${equipments.id}" min="1" placeholder="Qty">                                </div>                            `;                        });                        $('#equipment-list').html(equipmentList);                    })                    .always(function () {                        $('#equipment-loading').hide();                    });            }            function validateQuantity(equipmentId, quantity, date, timeslot) {                $.get(`/api/validate/quantity?equipment_id=${equipmentId}&quantity=${quantity}&date=${date}&timeslot=${timeslot}`)                    .done(function(data) {                        console.log(data);                        const validationMessage = data.isAvailable ? 'Quantity is available.' : 'Not enough available equipment.';                        // Update the input field with the validation message                        $(`#quantity-${equipmentId}`).next('.validation-message').remove();                        $(`#quantity-${equipmentId}`).after(`<span class="validation-message">${validationMessage}</span>`);                    })                    .fail(function() {                        $(`#quantity-${equipmentId}`).next('.validation-message').remove();                        $(`#quantity-${equipmentId}`).after('<span class="validation-message">Error checking availability.</span>');                    });            }            $('#equipment-list').on('input', 'input[type="number"]', function() {                const equipmentId = $(this).data('equipment-id');  // Get the equipment ID                const quantity = $(this).val();                const date = $('#date').val();                const timeslot = $('#timeslot').val();                if (quantity && quantity > 0) {                    validateQuantity(equipmentId, quantity, date, timeslot);                } else {                    $(this).next('.validation-message').remove();                }            });            $('#booking-form').submit(function (event) {                event.preventDefault(); // Prevent form submission                const name = $('#name').val();                const date = $('#date').val();                const timeslot = $('#timeslot').val();                const room_id = $('#room').val().id;                const equipments = [];                $('#equipment-list input').each(function () {                    const equipment_id = $(this).data('equipments').id;                    const quantity = $(this).val();                    if (quantity && quantity > 0) {                        equipments.push([equipment_id, quantity]);                    }                });                $.ajax({                    url: '/api/book',                    type: 'POST',                    contentType: 'application/json',                    data: JSON.stringify({ name, date, timeslot, room_id, equipments }),                    success: function (response) {                        $('#feedback').removeClass().addClass('alert alert-success')                            .html(`Booking successful! <br>                                   Room Booking ID: ${response.room_booking_id} <br>                                   Equipment Booking IDs: ${response.equipment_booking_ids.join(', ')}`)                            .show();                        $('#booking-form')[0].reset(); // Reset form                        $('#room').prop('disabled', true);                        $('#equipment-list').html('');                    },                    error: function (xhr) {                        $('#feedback').removeClass().addClass('alert alert-danger')                            .text(xhr.responseJSON?.error || 'Booking failed!')                            .show();                    }                });            });        });    </script></body>{% endblock %}
