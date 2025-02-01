@@ -1,130 +1,273 @@
+{#{% extends "base.html" %}#}
+{##}
+{#{% block title %}Inventory Management{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#    <head>#}
+{#        <meta charset="UTF-8">#}
+{#        <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#        <title>Inventory Management</title>#}
+{#        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">#}
+{#    </head>#}
+{##}
+{#    <body>#}
+{#        <div class="container mt-5">#}
+{#            <h1 class="mb-4 text-center">Welcome Lab Management!</h1>#}
+{##}
+{#            <!-- Inventory Overview Table -->#}
+{#            <table class="table table-bordered">#}
+{#                <thead class="thead-dark">#}
+{#                    <tr>#}
+{#                        <th colspan="2">Inventory Overview</th>#}
+{#                    </tr>#}
+{#                </thead>#}
+{#                <tbody>#}
+{#                    <tr>#}
+{#                        <td>Total Items</td>#}
+{#                        <td>{{ total_inventory_items }}</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Low Stock Items</td>#}
+{#                        <td>{{ low_stock_items }}</td>#}
+{#                    </tr>#}
+{#                </tbody>#}
+{#            </table>#}
+{##}
+{#            <!-- Low Stock Items Table -->#}
+{#            <table class="table table-bordered mt-3">#}
+{#                <thead class="thead-dark">#}
+{#                    <tr>#}
+{#                        <th>Ingredient</th>#}
+{#                        <th>Amount</th>#}
+{#                        <th>Threshold</th>#}
+{#                        <th>Status</th>#}
+{#                    </tr>#}
+{#                </thead>#}
+{#                <tbody>#}
+{#                    {% for item in low_stock_list %}#}
+{#                        <tr class="{% if item.amount < item.threshold %}table-warning{% endif %}">#}
+{#                            <td>{{ item.ingredient }}</td>#}
+{#                            <td>{{ item.amount }}</td>#}
+{#                            <td>{{ item.threshold }}</td>#}
+{#                            <td>{% if item.amount < item.threshold %}Low Stock{% else %}Sufficient{% endif %}</td>#}
+{#                        </tr>#}
+{#                    {% endfor %}#}
+{#                </tbody>#}
+{#            </table>#}
+{##}
+{#            <!-- Recent Updates Table -->#}
+{#            <table class="table table-bordered mt-3">#}
+{#                <thead class="thead-dark">#}
+{#                    <tr>#}
+{#                        <th>Ingredient</th>#}
+{#                        <th>Updated By</th>#}
+{#                        <th>Last Updated</th>#}
+{#                    </tr>#}
+{#                </thead>#}
+{#                <tbody>#}
+{#                    {% for item in recent_updates %}#}
+{#                        <tr>#}
+{#                            <td>{{ item.ingredient }}</td>#}
+{#                            <td>{{ item.updated_by }}</td>#}
+{#                            <td>{{ item.last_updated.strftime('%Y-%m-%d %H:%M:%S') }}</td>#}
+{#                        </tr>#}
+{#                    {% endfor %}#}
+{#                </tbody>#}
+{#            </table>#}
+{##}
+{#            <!-- Bootstrap JS -->#}
+{#            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>#}
+{##}
+{#            <script>#}
+{#                // Add Item Form Handler#}
+{#document.getElementById('addItemForm').addEventListener('submit', async function (e) {#}
+{#    e.preventDefault();#}
+{#    const formData = new FormData(this);#}
+{##}
+{#    try {#}
+{#        const response = await fetch('/inventory/add', {#}
+{#            method: 'POST',#}
+{#            body: formData#}
+{#        });#}
+{##}
+{#        if (response.ok) {#}
+{#            // Fetch the updated dashboard data#}
+{#            const dashboardResponse = await fetch('/dashboard/data');#}
+{#            const dashboardData = await dashboardResponse.json();#}
+{##}
+{#            // Update the dashboard with new data#}
+{#            document.getElementById('total_inventory').textContent = dashboardData.total_inventory_items;#}
+{#            document.getElementById('low_stock').textContent = dashboardData.low_stock_items;#}
+{#            // You can dynamically update the low_stock_list here as well if needed#}
+{#            const lowStockList = dashboardData.low_stock_list;#}
+{#            // Update the list in the dashboard (example)#}
+{#            updateLowStockList(lowStockList);#}
+{#        } else {#}
+{#            const errorData = await response.json();#}
+{#            alert(`Failed to add item: ${errorData.error || 'Unknown error'}`);#}
+{#        }#}
+{#    } catch (error) {#}
+{#        console.error('Add Error:', error);#}
+{#        alert('Failed to add item');#}
+{#    }#}
+{# });#}
+{##}
+{#// Function to update low stock items list in the dashboard#}
+{#function updateLowStockList(items) {#}
+{#    const lowStockListElement = document.getElementById('low_stock_list');#}
+{#    lowStockListElement.innerHTML = '';  // Clear current list#}
+{#    items.forEach(item => {#}
+{#        const li = document.createElement('li');#}
+{#        li.textContent = item.ingredient;  // Assuming 'ingredient' is part of the item#}
+{#        lowStockListElement.appendChild(li);#}
+{#    });#}
+{# }#}
+{##}
+{#            </script>#}
+{#        </div>#}
+{#    </body>#}
+{##}
+{#{% endblock %}#}
+
+
 {% extends "base.html" %}
 
 {% block title %}Inventory Management{% endblock %}
 
 {% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Inventory Management</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
 
-    <body>
-        <div class="container mt-5">
-            <h1 class="mb-4 text-center">Welcome Lab Management!</h1>
+    <body class="bg-gray-100 font-sans leading-normal tracking-wider">
 
-            <!-- Inventory Overview Table -->
-            <table class="table table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th colspan="2">Inventory Overview</th>
-                    </tr>
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">Welcome to Lab Management!</h1>
+
+        <!-- Inventory Overview Table -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <table class="table-auto w-full text-sm text-left text-gray-700">
+                <thead class="bg-indigo-600 text-white">
+                <tr>
+                    <th colspan="2" class="px-6 py-3 text-lg">Inventory Overview</th>
+                </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Total Items</td>
-                        <td>{{ total_inventory_items }}</td>
-                    </tr>
-                    <tr>
-                        <td>Low Stock Items</td>
-                        <td>{{ low_stock_items }}</td>
-                    </tr>
+                <tbody class="bg-white">
+                <tr class="border-t">
+                    <td class="px-6 py-3">Total Items</td>
+                    <td class="px-6 py-3">{{ total_inventory_items }}</td>
+                </tr>
+                <tr class="border-t">
+                    <td class="px-6 py-3">Low Stock Items</td>
+                    <td class="px-6 py-3">{{ low_stock_items }}</td>
+                </tr>
                 </tbody>
             </table>
-
-            <!-- Low Stock Items Table -->
-            <table class="table table-bordered mt-3">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Ingredient</th>
-                        <th>Amount</th>
-                        <th>Threshold</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in low_stock_list %}
-                        <tr class="{% if item.amount < item.threshold %}table-warning{% endif %}">
-                            <td>{{ item.ingredient }}</td>
-                            <td>{{ item.amount }}</td>
-                            <td>{{ item.threshold }}</td>
-                            <td>{% if item.amount < item.threshold %}Low Stock{% else %}Sufficient{% endif %}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <!-- Recent Updates Table -->
-            <table class="table table-bordered mt-3">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Ingredient</th>
-                        <th>Updated By</th>
-                        <th>Last Updated</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in recent_updates %}
-                        <tr>
-                            <td>{{ item.ingredient }}</td>
-                            <td>{{ item.updated_by }}</td>
-                            <td>{{ item.last_updated.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <!-- Bootstrap JS -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-
-            <script>
-                // Add Item Form Handler
-document.getElementById('addItemForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-
-    try {
-        const response = await fetch('/inventory/add', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok) {
-            // Fetch the updated dashboard data
-            const dashboardResponse = await fetch('/dashboard/data');
-            const dashboardData = await dashboardResponse.json();
-
-            // Update the dashboard with new data
-            document.getElementById('total_inventory').textContent = dashboardData.total_inventory_items;
-            document.getElementById('low_stock').textContent = dashboardData.low_stock_items;
-            // You can dynamically update the low_stock_list here as well if needed
-            const lowStockList = dashboardData.low_stock_list;
-            // Update the list in the dashboard (example)
-            updateLowStockList(lowStockList);
-        } else {
-            const errorData = await response.json();
-            alert(`Failed to add item: ${errorData.error || 'Unknown error'}`);
-        }
-    } catch (error) {
-        console.error('Add Error:', error);
-        alert('Failed to add item');
-    }
-});
-
-// Function to update low stock items list in the dashboard
-function updateLowStockList(items) {
-    const lowStockListElement = document.getElementById('low_stock_list');
-    lowStockListElement.innerHTML = '';  // Clear current list
-    items.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item.ingredient;  // Assuming 'ingredient' is part of the item
-        lowStockListElement.appendChild(li);
-    });
-}
-
-            </script>
         </div>
+
+        <!-- Low Stock Items Table -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <table class="table-auto w-full text-sm text-left text-gray-700">
+                <thead class="bg-red-600 text-white">
+                <tr>
+                    <th class="px-6 py-3">Ingredient</th>
+                    <th class="px-6 py-3">Amount</th>
+                    <th class="px-6 py-3">Threshold</th>
+                    <th class="px-6 py-3">Status</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white">
+                {% for item in low_stock_list %}
+                    <tr class="{% if item.amount < item.threshold %}bg-yellow-200{% endif %} border-t">
+                        <td class="px-6 py-3">{{ item.ingredient }}</td>
+                        <td class="px-6 py-3">{{ item.amount }}</td>
+                        <td class="px-6 py-3">{{ item.threshold }}</td>
+                        <td class="px-6 py-3">
+                            {% if item.amount < item.threshold %}Low Stock{% else %}Sufficient{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recent Updates Table -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <table class="table-auto w-full text-sm text-left text-gray-700">
+                <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="px-6 py-3">Ingredient</th>
+                    <th class="px-6 py-3">Updated By</th>
+                    <th class="px-6 py-3">Last Updated</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white">
+                {% for item in recent_updates %}
+                    <tr class="border-t">
+                        <td class="px-6 py-3">{{ item.ingredient }}</td>
+                        <td class="px-6 py-3">{{ item.updated_by }}</td>
+                        <td class="px-6 py-3">{{ item.last_updated.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            document.getElementById('addItemForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                try {
+                    const response = await fetch('/inventory/add', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        // Fetch the updated dashboard data
+                        const dashboardResponse = await fetch('/dashboard/data');
+                        const dashboardData = await dashboardResponse.json();
+
+                        // Update the dashboard with new data
+                        document.getElementById('total_inventory').textContent = dashboardData.total_inventory_items;
+                        document.getElementById('low_stock').textContent = dashboardData.low_stock_items;
+                        // You can dynamically update the low_stock_list here as well if needed
+                        const lowStockList = dashboardData.low_stock_list;
+                        // Update the list in the dashboard (example)
+                        updateLowStockList(lowStockList);
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Failed to add item: ${errorData.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Add Error:', error);
+                    alert('Failed to add item');
+                }
+            });
+
+            // Function to update low stock items list in the dashboard
+            function updateLowStockList(items) {
+                const lowStockListElement = document.getElementById('low_stock_list');
+                lowStockListElement.innerHTML = '';  // Clear current list
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item.ingredient;  // Assuming 'ingredient' is part of the item
+                    lowStockListElement.appendChild(li);
+                });
+            }
+
+        </script>
+    </div>
     </body>
 
 {% endblock %}
