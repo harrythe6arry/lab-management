@@ -1,12 +1,15 @@
 from flask import Blueprint, render_template, request, jsonify
 from utils import booking
+from routes import auth
 booking_routes = Blueprint('booking_routes', __name__)
 
 @booking_routes.route('/booking', methods=['GET'])
+@auth.user_login_required
 def booking_page():
     return render_template('booking.html')
 
 @booking_routes.route('/api/available/rooms', methods=['GET'])
+@auth.user_login_required
 def get_available_rooms():
     selected_date = request.args.get('date')
     timeslot = request.args.get('timeslot')
@@ -18,6 +21,7 @@ def get_available_rooms():
     return jsonify({'rooms': []})
 
 @booking_routes.route('/api/available/equipments', methods=['GET'])
+@auth.user_login_required
 def get_available_equipments():
     selected_date = request.args.get('date')
     timeslot = request.args.get('timeslot')
@@ -28,6 +32,7 @@ def get_available_equipments():
     return jsonify({'equipments': []})
 
 @booking_routes.route('/api/validate/quantity', methods=['GET'])
+@auth.user_login_required
 def validate_quantity():
     equipment_id = request.args.get('equipment_id')
     quantity = int(request.args.get('quantity'))
@@ -40,6 +45,7 @@ def validate_quantity():
 
 
 @booking_routes.route('/api/book', methods=['POST'])
+@auth.user_login_required
 def submit_booking():
     data = request.json
     name = data['name']
