@@ -69,15 +69,16 @@ a:hover {
 }
 
 .spinner {
-   position: absolute;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   z-index: 10;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
 }
+
 .disabled {
-   pointer-events: none;
-   opacity: 0.5;
+    pointer-events: none;
+    opacity: 0.5;
 }
 
 .full-page-loader {
@@ -101,6 +102,27 @@ a:hover {
     text-align: center;
     margin: 0;
 }
+
+.custom-rounded-table {
+    border-radius: 1.5rem; /* Adjust the value to your preference */
+    overflow: hidden; /* Ensure the content doesn't spill out of rounded corners */
+}
+
+
+/* Apply border-radius to table and cells */
+
+    #inventoryTable {
+        border-radius: 1.5rem !important;
+        overflow: hidden;
+    }
+
+    #inventoryTable th, #inventoryTable td {
+        border-radius: 1.5rem !important;
+    }
+
+
+
+
 
 
 
