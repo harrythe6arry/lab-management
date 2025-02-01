@@ -6,7 +6,7 @@ load_dotenv()
 
 # initialise a connection pool
 db_pool = pool.SimpleConnectionPool(
-    1, 10,  # Min 1 connection, max 10
+    1, 100,
     host=os.getenv('DB_HOST'),
     database=os.getenv('DB_NAME'),
     user=os.getenv('DB_USERNAME'),
