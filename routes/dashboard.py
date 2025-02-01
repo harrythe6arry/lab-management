@@ -1,6 +1,7 @@
 from flask import render_template, Blueprint
 from psycopg2 import extras
 from utils import db
+from utils import tasks
 from routes.auth import user_login_required
 
 dashboard_routes = Blueprint("dashboard_routes", __name__)
@@ -45,8 +46,13 @@ def dashboard():
         """)
         recent_updates = cur.fetchall()
 
+
         # Close database connection
         db.close_db_connection(conn)
+        tasks_data = tasks.get_all_tasks()
+        # print(f"task data: {tasks_data}")tasks_data
+        if not tasks_data:
+            tasks_data = []
 
         # Pass all metrics to the dashboard template
         return render_template(
@@ -55,6 +61,7 @@ def dashboard():
             low_stock_items=low_stock_items,
             low_stock_list=low_stock_list,
             recent_updates=recent_updates,
+            tasks_data= tasks_data
         )
 
     except Exception as e:
