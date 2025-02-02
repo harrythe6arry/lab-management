@@ -92,9 +92,9 @@ def book_room_and_equipment(name, room_id, room_name, equipments, date, timeslot
                     })
 
                 cur.execute("""
-                    INSERT INTO schedule (booking_name, time_slot, booking_date, room, equipments, created_by)
-                    VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;
-                """, (name, timeslot, date, room_name, json.dumps(equipment_details), session['user']))
+                    INSERT INTO schedule (booking_name, time_slot, booking_date, room, equipments, created_by, created_at)
+                    VALUES (%s, %s, %s, %s, %s, %s,%s) RETURNING id;
+                """, (name, timeslot, date, room_name, json.dumps(equipment_details), session['user'], app.service.timezone.get_thailand_time()))
                 conn.commit()
                 return {
                     'room_name': room_name,
@@ -118,13 +118,13 @@ def get_all_bookings():
                     event = {
                         "id": booking[0],
                         "title": booking[1],  # Show only booking name
-                        "start": f"{start_datetime.strftime('%Y-%m-%d')}T{booking[2]}",  # Date and time
+                        "start": f"{app.service.timezone.convert_utc_to_thailand_time(start_datetime).strftime('%Y-%m-%d')}T{booking[2]}",
                         "extendedProps": {
                             "room": booking[4],  # Room name
                             "equipments": booking[5] if booking[5] else [],  # List of equipment
                             "created_by": booking[6],  # Created by user
                             "created_at": app.service.timezone.convert_utc_to_thailand_time(booking[7]).strftime("%Y-%m-%d %H:%M:%S"),
-                            "date": start_datetime.strftime('%Y-%m-%d'),
+                            "date": app.service.timezone.convert_utc_to_thailand_time(start_datetime).strftime('%Y-%m-%d'),
                             "timeslot": booking[2]
                         }
                     }

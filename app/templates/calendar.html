@@ -86,7 +86,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 events: '/api/bookings',
-                timeZone: 'local',
+                timeZone: 'Asia/Bangkok',
                 eventContent: function (info) {
                     let timeslot = info.event.extendedProps.timeslot || "N/A";
                     let eventTitle = info.event.title;
