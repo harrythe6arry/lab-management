@@ -66,4 +66,4 @@ def dashboard():
 
     except Exception as e:
         print(f"[ERROR] Failed to load dashboard: {e}")
-        return render_template('dashboard.html', error=True)
+        return render_template('dashboard.html')
