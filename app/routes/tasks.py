@@ -1,10 +1,14 @@
 from datetime import datetime, timezone
 from flask import request, jsonify, Blueprint, render_template
+
+from app.routes import auth
+from app.routes.auth import user_login_required
 from app.service import tasks, timezone
 
 tasks_routes = Blueprint("tasks_routes", __name__)
 
 @tasks_routes.route('/tasks', methods=['GET'])
+@user_login_required
 def fetch_tasks():
     """Fetch all tasks."""
     task = tasks.get_all_tasks()
@@ -13,6 +17,7 @@ def fetch_tasks():
     return render_template('tasks.html', task_data=task, today=now)
 
 @tasks_routes.route('/tasks/add', methods=['GET', 'POST'])
+@user_login_required
 def add_task():
     """Add a new task."""
     name = request.form.get('name')
@@ -29,6 +34,7 @@ def add_task():
 
 
 @tasks_routes.route('/tasks/edit', methods=['GET','POST'])
+@user_login_required
 def edit_task():
     """Edit an existing task."""
     task_id = request.form.get('id')
@@ -48,6 +54,7 @@ def edit_task():
         return jsonify({'error': str(e)}), 500
 
 @tasks_routes.route('/tasks/delete', methods=['POST'])
+@user_login_required
 def delete_task():
     """Delete a task."""
     task_id = request.form.get('id')
@@ -62,6 +69,7 @@ def delete_task():
 
 
 @tasks_routes.route('/tasks/update-status', methods=['POST'])
+@user_login_required
 def update_task_status():
     data = request.get_json()  # Access JSON data
     task_id = data.get('id')
