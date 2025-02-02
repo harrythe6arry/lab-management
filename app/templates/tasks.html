@@ -26,152 +26,305 @@
             </button>
         </div>
 
-
         <!-- Task Boards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Not Started -->
-            <div class="bg-white shadow-md rounded-lg p-4">
-                <h2 class="text-xl font-semibold mb-4 text-gray-700 ">Not Started</h2>
-                <div id="not-started" class="space-y-3">
-                    {% for task in task_data if task.status == "Not Started" %}
-                        <div class="task bg-gray-50 p-3 rounded-lg shadow-sm cursor-move" data-id="{{ task.id }}">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-800">{{ task.name }}</span>
-                                <div class="flex space-x-2">
-                                    <button class="text-blue-500 hover:text-blue-700 edit-btn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editTaskModal"
-                                            data-id="{{ task.id }}"
-                                            data-name="{{ task.name }}"
-                                            data-due_date="{{ task.due_date }}"
-                                            data-status="{{ task.status }}">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-500 hover:text-red-700 delete-btn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#deleteConfirmModal"
-                                            data-id="{{ task.id }}"
-                                            data-name="{{ task.name }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="text-sm text-gray-500 mt-2">
-                                <span>Assigned to: {{ task.assigned_to }}</span><br>
-                                <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Pending -->
-            <div class="bg-white shadow-md rounded-lg p-4">
-                <h2 class="text-xl font-semibold mb-4 text-gray-700">Pending</h2>
-                <div id="pending" class="space-y-3">
-                    {% for task in task_data if task.status == "Pending" %}
-                        <div class="task bg-yellow-50 p-3 rounded-lg shadow-sm cursor-move" data-id="{{ task.id }}">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-800">{{ task.name }}</span>
-                                <div class="flex space-x-2">
-                                    <button class="text-blue-500 hover:text-blue-700 edit-btn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editTaskModal"
-                                            data-id="{{ task.id }}"
-                                            data-name="{{ task.name }}"
-                                            data-due_date="{{ task.due_date }}"
-                                            data-status="{{ task.status }}">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-500 hover:text-red-700 delete-btn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#deleteConfirmModal"
-                                            data-id="{{ task.id }}"
-                                            data-name="{{ task.name }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="text-sm text-gray-500 mt-2">
-                                <span>Assigned to: {{ task.assigned_to }}</span><br>
-                                <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Completed -->
-            <div class="bg-white shadow-md rounded-lg p-4">
-                <h2 class="text-xl font-semibold mb-4 text-gray-700">Completed</h2>
-                <div id="completed" class="space-y-3">
-                    {% for task in task_data if task.status == "Completed" %}
-                        <div class="task bg-green-50 p-3 rounded-lg shadow-sm cursor-move " data-id="{{ task.id }}">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-800">{{ task.name }}</span>
-                                <div class="flex space-x-2">
-                                    <button class="text-blue-500 hover:text-blue-700 edit-btn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editTaskModal"
-                                            data-id="{{ task.id }}"
-                                            data-name="{{ task.name }}"
-                                            data-due_date="{{ task.due_date }}"
-                                            data-status="{{ task.status }}">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-500 hover:text-red-700 delete-btn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#deleteConfirmModal"
-                                            data-id="{{ task.id }}"
-                                            data-name="{{ task.name }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="text-sm text-gray-500 mt-2">
-                                <span>Assigned to: {{ task.assigned_to }}</span><br>
-                                <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white shadow-md rounded-lg p-4 mt-10">
-            <h2 class="text-xl font-semibold mb-10 text-gray-700">Overdue</h2>
-            <div id="overdue" class="space-y-3">
-                {% for task in task_data if task.status == "Overdue" %}
-                    <div class="task bg-red-50 p-3 rounded-lg shadow-sm cursor-move " data-id="{{ task.id }}">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-800">{{ task.name }}</span>
-                            <div class="flex space-x-2">
-                                <button class="text-blue-500 hover:text-blue-700 edit-btn"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editTaskModal"
-                                        data-id="{{ task.id }}"
-                                        data-name="{{ task.name }}"
-                                        data-due_date="{{ task.due_date }}"
-                                        data-status="{{ task.status }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-500 hover:text-red-700 delete-btn"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#deleteConfirmModal"
-                                        data-id="{{ task.id }}"
-                                        data-name="{{ task.name }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="text-sm text-gray-500 mt-2">
-                            <span>Assigned to: {{ task.assigned_to }}</span><br>
-                            <span> Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Not Started -->
+    <div class="bg-white-100 shadow-lg rounded-xl p-5 border border-white-300">
+        <h2 class="text-2xl font-bold mb-4 text-black-800">Not Started</h2>
+        <div id="not-started" class="space-y-3">
+            {% for task in task_data if task.status == "Not Started" %}
+                <div class="bg-white p-4 shadow-md rounded-lg border border-gray-300" data-id="{{ task.id }}">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-800">{{ task.name }}</span>
+                        <div class="flex space-x-2">
+                            <button class="text-blue-500 hover:text-blue-700 edit-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editTaskModal"
+                                    data-id="{{ task.id }}"
+                                    data-name="{{ task.name }}"
+                                    data-due_date="{{ task.due_date }}"
+                                    data-status="{{ task.status }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700 delete-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteConfirmModal"
+                                    data-id="{{ task.id }}"
+                                    data-name="{{ task.name }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
+                    <div class="text-sm text-gray-500 mt-2">
+                        <span>Assigned to: {{ task.assigned_to }}</span><br>
+                        <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
+    </div>
+
+    <!-- Pending -->
+    <div class="bg-blue-100 shadow-lg rounded-xl p-5 border border-blue-300">
+        <h2 class="text-2xl font-bold mb-4 text-blue-800">Pending</h2>
+        <div id="pending" class="space-y-3">
+            {% for task in task_data if task.status == "Pending" %}
+                <div class="bg-white p-4 shadow-md rounded-lg border border-gray-300" data-id="{{ task.id }}">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-800">{{ task.name }}</span>
+                        <div class="flex space-x-2">
+                            <button class="text-blue-500 hover:text-blue-700 edit-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editTaskModal"
+                                    data-id="{{ task.id }}"
+                                    data-name="{{ task.name }}"
+                                    data-due_date="{{ task.due_date }}"
+                                    data-status="{{ task.status }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700 delete-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteConfirmModal"
+                                    data-id="{{ task.id }}"
+                                    data-name="{{ task.name }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500 mt-2">
+                        <span>Assigned to: {{ task.assigned_to }}</span><br>
+                        <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Completed -->
+    <div class="bg-green-100 shadow-lg rounded-xl p-5 border border-green-300">
+        <h2 class="text-2xl font-bold mb-4 text-green-800">Completed</h2>
+        <div id="completed" class="space-y-3">
+            {% for task in task_data if task.status == "Completed" %}
+                <div class="bg-white p-4 shadow-md rounded-lg border border-gray-300" data-id="{{ task.id }}">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-800">{{ task.name }}</span>
+                        <div class="flex space-x-2">
+                            <button class="text-blue-500 hover:text-blue-700 edit-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editTaskModal"
+                                    data-id="{{ task.id }}"
+                                    data-name="{{ task.name }}"
+                                    data-due_date="{{ task.due_date }}"
+                                    data-status="{{ task.status }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700 delete-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteConfirmModal"
+                                    data-id="{{ task.id }}"
+                                    data-name="{{ task.name }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500 mt-2">
+                        <span>Assigned to: {{ task.assigned_to }}</span><br>
+                        <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Overdue-->
+    <div class="bg-red-100 shadow-lg rounded-xl p-5 border border-red-300">
+        <h2 class="text-2xl font-bold mb-4 text-red-800">Overdue</h2>
+        <div id="overdue" class="space-y-3">
+            {% for task in task_data if task.status == "Overdue" %}
+                <div class="bg-white p-4 shadow-md rounded-lg border border-gray-300" data-id="{{ task.id }}">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-800">{{ task.name }}</span>
+                        <div class="flex space-x-2">
+                            <button class="text-blue-500 hover:text-blue-700 edit-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editTaskModal"
+                                    data-id="{{ task.id }}"
+                                    data-name="{{ task.name }}"
+                                    data-due_date="{{ task.due_date }}"
+                                    data-status="{{ task.status }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700 delete-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteConfirmModal"
+                                    data-id="{{ task.id }}"
+                                    data-name="{{ task.name }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500 mt-2">
+                        <span>Assigned to: {{ task.assigned_to }}</span><br>
+                        <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+
+{#        <!-- Task Boards -->#}
+{#        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">#}
+{#            <!-- Not Started -->#}
+{#            <div class="bg-red-100 shadow-lg rounded-xl p-5 border border-red-300">#}
+{#                <h2 class="text-2xl font-bold mb-4 text-red-800 ">Not Started</h2>#}
+{#                <div id="not-started" class="space-y-3">#}
+{#                    {% for task in task_data if task.status == "Not Started" %}#}
+{#                        <div class="bg-white p-4 shadow-md rounded-lg border border-gray-300" data-id="{{ task.id }}">#}
+{#                            <div class="flex justify-between items-center">#}
+{#                                <span class="text-gray-800">{{ task.name }}</span>#}
+{#                                <div class="flex space-x-2">#}
+{#                                    <button class="text-blue-500 hover:text-blue-700 edit-btn"#}
+{#                                            data-bs-toggle="modal"#}
+{#                                            data-bs-target="#editTaskModal"#}
+{#                                            data-id="{{ task.id }}"#}
+{#                                            data-name="{{ task.name }}"#}
+{#                                            data-due_date="{{ task.due_date }}"#}
+{#                                            data-status="{{ task.status }}">#}
+{#                                        <i class="fas fa-edit"></i>#}
+{#                                    </button>#}
+{#                                    <button class="text-red-500 hover:text-red-700 delete-btn"#}
+{#                                            data-bs-toggle="modal"#}
+{#                                            data-bs-target="#deleteConfirmModal"#}
+{#                                            data-id="{{ task.id }}"#}
+{#                                            data-name="{{ task.name }}">#}
+{#                                        <i class="fas fa-trash"></i>#}
+{#                                    </button>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="text-sm text-gray-500 mt-2">#}
+{#                                <span>Assigned to: {{ task.assigned_to }}</span><br>#}
+{#                                <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <!-- Pending -->#}
+{#            <div class="bg-blue-100 shadow-lg rounded-xl p-5 border border-blue-300">#}
+{#                <h2 class="text-2xl font-bold mb-4 text-blue-800">Pending</h2>#}
+{#                <div id="pending" class="space-y-3">#}
+{#                    {% for task in task_data if task.status == "Pending" %}#}
+{#                        <div class="bg-white p-4 shadow-md rounded-lg border border-gray-300" data-id="{{ task.id }}">#}
+{#                            <div class="flex justify-between items-center">#}
+{#                                <span class="text-gray-800">{{ task.name }}</span>#}
+{#                                <div class="flex space-x-2">#}
+{#                                    <button class="text-blue-500 hover:text-blue-700 edit-btn"#}
+{#                                            data-bs-toggle="modal"#}
+{#                                            data-bs-target="#editTaskModal"#}
+{#                                            data-id="{{ task.id }}"#}
+{#                                            data-name="{{ task.name }}"#}
+{#                                            data-due_date="{{ task.due_date }}"#}
+{#                                            data-status="{{ task.status }}">#}
+{#                                        <i class="fas fa-edit"></i>#}
+{#                                    </button>#}
+{#                                    <button class="text-red-500 hover:text-red-700 delete-btn"#}
+{#                                            data-bs-toggle="modal"#}
+{#                                            data-bs-target="#deleteConfirmModal"#}
+{#                                            data-id="{{ task.id }}"#}
+{#                                            data-name="{{ task.name }}">#}
+{#                                        <i class="fas fa-trash"></i>#}
+{#                                    </button>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="text-sm text-gray-500 mt-2">#}
+{#                                <span>Assigned to: {{ task.assigned_to }}</span><br>#}
+{#                                <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{##}
+{##}
+{#            <!-- Completed -->#}
+{#            <div class="bg-green-100 shadow-lg rounded-xl p-5 border border-green-300">#}
+{#                <h2 class="text-2xl font-bold mb-4 text-green-800">Completed</h2>#}
+{#                <div id="completed" class="space-y-3">#}
+{#                    {% for task in task_data if task.status == "Completed" %}#}
+{#                        <div class="bg-white p-4 shadow-md rounded-lg border border-gray-300" data-id="{{ task.id }}">#}
+{#                            <div class="flex justify-between items-center">#}
+{#                                <span class="text-gray-800">{{ task.name }}</span>#}
+{#                                <div class="flex space-x-2">#}
+{#                                    <button class="text-blue-500 hover:text-blue-700 edit-btn"#}
+{#                                            data-bs-toggle="modal"#}
+{#                                            data-bs-target="#editTaskModal"#}
+{#                                            data-id="{{ task.id }}"#}
+{#                                            data-name="{{ task.name }}"#}
+{#                                            data-due_date="{{ task.due_date }}"#}
+{#                                            data-status="{{ task.status }}">#}
+{#                                        <i class="fas fa-edit"></i>#}
+{#                                    </button>#}
+{#                                    <button class="text-red-500 hover:text-red-700 delete-btn"#}
+{#                                            data-bs-toggle="modal"#}
+{#                                            data-bs-target="#deleteConfirmModal"#}
+{#                                            data-id="{{ task.id }}"#}
+{#                                            data-name="{{ task.name }}">#}
+{#                                        <i class="fas fa-trash"></i>#}
+{#                                    </button>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="text-sm text-gray-500 mt-2">#}
+{#                                <span>Assigned to: {{ task.assigned_to }}</span><br>#}
+{#                                <span>Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{##}
+{##}
+{#        <!-- Overdue -->#}
+{#        <div class="bg-white shadow-md rounded-lg p-4 mt-5">#}
+{#            <h2 class="text-2xl font-bold mb-4 text-red-800">Overdue</h2>#}
+{#            <div id="overdue" class="space-y-3">#}
+{#                {% for task in task_data if task.status == "Overdue" %}#}
+{#                    <div class="task bg-red-50 p-3 rounded-lg shadow-sm cursor-move " data-id="{{ task.id }}">#}
+{#                        <div class="flex justify-between items-center">#}
+{#                            <span class="text-gray-800">{{ task.name }}</span>#}
+{#                            <div class="flex space-x-2">#}
+{#                                <button class="text-blue-500 hover:text-blue-700 edit-btn"#}
+{#                                        data-bs-toggle="modal"#}
+{#                                        data-bs-target="#editTaskModal"#}
+{#                                        data-id="{{ task.id }}"#}
+{#                                        data-name="{{ task.name }}"#}
+{#                                        data-due_date="{{ task.due_date }}"#}
+{#                                        data-status="{{ task.status }}">#}
+{#                                    <i class="fas fa-edit"></i>#}
+{#                                </button>#}
+{#                                <button class="text-red-500 hover:text-red-700 delete-btn"#}
+{#                                        data-bs-toggle="modal"#}
+{#                                        data-bs-target="#deleteConfirmModal"#}
+{#                                        data-id="{{ task.id }}"#}
+{#                                        data-name="{{ task.name }}">#}
+{#                                    <i class="fas fa-trash"></i>#}
+{#                                </button>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="text-sm text-gray-500 mt-2">#}
+{#                            <span>Assigned to: {{ task.assigned_to }}</span><br>#}
+{#                            <span> Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'N/A' }}</span>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#            </div>#}
+{#        </div>#}
 
 
         <!-- Add Task Modal -->
@@ -185,26 +338,24 @@
                     <div class="modal-body p-4">
                         <form id="addTaskForm">
                             <!-- Task Name Field -->
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700">Task Name</label>
-                                <input type="text" name="name"
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                       placeholder="Enter task name" required>
+                            <div class="mb-3">
+                                <label class="form-label">Task Name</label>
+                                <input type="text" class="form-control" name="name" id="edit-name" required>
                             </div>
 
                             <!-- Due Date Field -->
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700">Due Date</label>
+                            <div class="mb-3">
+                                <label class="form-label">Due Date</label>
                                 <input type="date" name="due_date"
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       class="form-control"
                                        required>
                             </div>
 
                             <!-- Status Field -->
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700">Status</label>
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
                                 <select name="status"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        class="form-control"
                                         required>
                                     <option value="Not Started">Not Started</option>
                                     <option value="Pending">Pending</option>
@@ -213,10 +364,10 @@
                             </div>
 
                             <!-- Assigned To Field -->
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700">Assigned To</label>
+                            <div class="mb-3">
+                                <label class="form-label">Assigned To</label>
                                 <select name="assigned_to"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        class="form-control"
                                         required>
                                     {% for user in users %}
                                         <option value="{{ user[1] }}">{{ user[1] }} ({{ user[2] }})</option>
@@ -259,14 +410,15 @@
                             <div class="mb-3">
                                 <label class="form-label">Status</label>
                                 <select class="form-control" name="status" id="edit-status" required>
+                                    <option value="Not Started">Not Started</option>
                                     <option value="Pending">Pending</option>
                                     <option value="Completed">Completed</option>
                                 </select>
                             </div>
                             <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700">Assigned To</label>
+                                <label class="form-label">Assigned To</label>
                                 <select name="assigned-to"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        class="form-control"
                                         required>
                                     {% for user in users %}
                                         <option value="{{ user[1] }}">{{ user[1] }} ({{ user[2] }})</option>
