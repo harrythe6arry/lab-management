@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from flask import request, jsonify, Blueprint, render_template
 
+import app.service.user
 from app.routes import auth
 from app.routes.auth import user_login_required
 from app.service import tasks, timezone
@@ -13,8 +14,10 @@ def fetch_tasks():
     """Fetch all tasks."""
     task = tasks.get_all_tasks()
     now = timezone.convert_utc_to_thailand_time(datetime.now())
+    users = app.service.user.get_all_users()
+    print(f"Users: {users}")
 
-    return render_template('tasks.html', task_data=task, today=now)
+    return render_template('tasks.html', task_data=task, today=now, users=users)
 
 @tasks_routes.route('/tasks/add', methods=['GET', 'POST'])
 @user_login_required
@@ -37,11 +40,16 @@ def add_task():
 @user_login_required
 def edit_task():
     """Edit an existing task."""
+
+
+
     task_id = request.form.get('id')
     name = request.form.get('name')
     due_date = request.form.get('due_date')
     status = request.form.get('status')
     assigned_to = request.form.get('assigned-to')
+
+
 
 
     print(f" task_id: {task_id} name: {name} due_date: {due_date} status: {status} assigned_to: {assigned_to}")
