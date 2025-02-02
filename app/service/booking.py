@@ -136,3 +136,17 @@ def get_all_bookings():
     except psycopg2.Error as e:
         print(f"[ERROR] Failed to get bookings: {e}")
         return []
+
+
+def delete_booking(delete_id):
+    try:
+        with db.get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("DELETE FROM bookings WHERE id = %s", (delete_id,))
+                conn.commit()
+                return True
+    except psycopg2.Error as e:
+        print(f"[ERROR] Failed to delete booking: {e}")
+        return False
+    finally:
+        db.close_db_connection(conn)

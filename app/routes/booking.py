@@ -79,3 +79,13 @@ def calendar_page():
 def get_bookings():
     events = booking.get_all_bookings()
     return jsonify(events)
+
+
+@booking_routes.route('/api/bookings/delete', methods=['POST'])
+@auth.user_login_required
+def delete_booking():
+    booking_id = request.json['id']
+    success = booking.delete_booking(booking_id)
+    if success:
+        return jsonify({'message': 'Booking deleted successfully'})
+    return jsonify({'error': 'Failed to delete booking'}), 400
