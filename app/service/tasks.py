@@ -1,3 +1,4 @@
+from flask import session
 from psycopg2 import extras
 from app.service import db, timezone
 
@@ -6,23 +7,15 @@ def get_all_tasks():
     """Fetch all tasks from the database."""
     conn = db.get_db_connection()
     cur = conn.cursor(cursor_factory=extras.DictCursor)
-    cur.execute("SELECT * FROM tasks ORDER BY id DESC;")
+    user = session.get('user')
+    print(f"Getting all tasks for user: {user}")
+    cur.execute("""SELECT * FROM tasks WHERE assigned_to = %s ORDER BY id DESC""", (user,))
     tasks = cur.fetchall()
     db.close_db_connection(conn)
 
     # Convert UTC timestamps to Thailand time and format dates
     # add task that is overduem causes duplicates
     for task in tasks:
-        if task['created_at']:
-            task['created_at'] = timezone.convert_utc_to_thailand_time(task['created_at'])
-        else:
-            task['created_at'] = "Not Set"
-
-        if task['completed_at']:
-            task['completed_at'] = timezone.convert_utc_to_thailand_time(task['completed_at'])
-        else:
-            task['completed_at'] = "Not Set"
-
         if task['due_date']:
             task['due_date'] = timezone.convert_utc_to_thailand_time(task['due_date'])
         else:
@@ -30,7 +23,6 @@ def get_all_tasks():
 
         if task['due_date'] < timezone.get_thailand_time():
             task['status'] = 'Overdue'
-            # update_task_status(task['id'], 'Overdue')
 
     return tasks
 
