@@ -30,7 +30,7 @@ def get_all_tasks():
 
         if task['due_date'] < timezone.get_thailand_time():
             task['status'] = 'Overdue'
-            update_task_status(task['id'], 'Overdue')
+            # update_task_status(task['id'], 'Overdue')
 
     return tasks
 
