@@ -1,38 +1,65 @@
-# Lab Management App
+# Lab Management
 
-## Setup Instructions
+## Description
+Lab Management is a Flask-based web application designed to manage laboratory resources, bookings, and user authentication efficiently.
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/your-repo.git
-    cd your-repo
-    ```
+## Features
+- User authentication and authorization
+- Inventory management
+- Task and booking system
+- Dashboard for managing lab operations
+- Calendar view for bookings
+- User Management
 
-2. Create a `.env` file and add your database credentials:
-    ```bash
-    DB_USERNAME=your_database_user
-    DB_PASSWORD=your_database_password
-    ```
+## Project Structure
+```
+lab-management/
+│── app/
+│   ├── routes/
+│   │   ├── auth.py
+│   │   ├── dashboard.py
+│   │   ├── tasks.py
+│   │   ├── users.py
+│   │   ├── inventory.py
+│   │   ├── booking.py
+│   ├── static/
+│   ├── templates/
+│   ├── utils/
+│   ├── __init__.py
+│── .gitignore
+│── poetry.lock
+│── pyproject.toml
+│── README.md
+```
 
-3. Install the required dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+## Installation
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/lab-management.git
+cd lab-management
+```
 
-4. Run the database setup script to create the tables and insert sample data:
-    ```bash
-    python init_db.py
-    ```
+### 2. Download Poetry
+```bash
+pip install poetry
+```
 
-5. Start the application:
-    ```bash
-    python app.py
-    ```
+### 3. Install Dependencies
+Using Poetry:
+```bash
+poetry install
+```
 
-## Database Setup
+### 4. Set Up Environment Variables
+Create a `.env` file in the root directory and add necessary configurations like:
+```ini
+FLASK_APP=app
+FLASK_ENV=development
+SECRET_KEY=your_secret_key
+DATABASE_URL=your_database_connection_string
+```
 
-The `init_db.py` script will create the necessary database tables and insert sample data.
-
-## Troubleshooting
-
-- If you encounter a database connection error, ensure your PostgreSQL instance is running and your credentials are correct.
+## Running the Application
+```bash
+flask run
+```
