@@ -7,7 +7,7 @@ __pycache__/
 venv/
 env/
 
-.env
+app/.env
 .flaskenv
 
 .idea/

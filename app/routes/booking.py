@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
-from utils import booking
-from routes import auth
+from app.service import booking
+from app.routes import auth
 booking_routes = Blueprint('booking_routes', __name__)
 
 @booking_routes.route('/booking', methods=['GET'])

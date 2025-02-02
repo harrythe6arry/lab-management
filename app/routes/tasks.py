@@ -1,10 +1,6 @@
 from datetime import datetime, timezone
-
-from flask import Flask, request, jsonify, Blueprint, render_template, session
-
-from utils import tasks
-from utils import timezone
-app = Flask(__name__)
+from flask import request, jsonify, Blueprint, render_template
+from app.service import tasks, timezone
 
 tasks_routes = Blueprint("tasks_routes", __name__)
 

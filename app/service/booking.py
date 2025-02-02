@@ -1,5 +1,5 @@
 import psycopg2
-from utils import db
+from app.service import db
 
 
 def get_available_rooms(selected_date, timeslot):

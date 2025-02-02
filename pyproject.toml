@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "lab-management"
+name = "app"
 version = "0.1.0"
 description = ""
 authors = ["Lingling <pusanisa.jar@student.mahidol.edu>"]
 readme = "README.md"
-packages = [{include = "lab_management"}]
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"

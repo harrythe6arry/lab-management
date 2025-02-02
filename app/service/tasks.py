@@ -1,5 +1,5 @@
 from psycopg2 import extras
-from utils import db, timezone
+from app.service import db, timezone
 
 def get_all_tasks():
     """Fetch all tasks from the database."""
@@ -119,8 +119,6 @@ def delete_task(task_id):
     finally:
         db.close_db_connection(conn)
 
-
-import psycopg2
 
 def update_task_status(task_id, status):
     try:

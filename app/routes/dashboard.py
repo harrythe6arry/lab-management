@@ -1,8 +1,8 @@
 from flask import render_template, Blueprint
 from psycopg2 import extras
-from utils import db
-from utils import tasks
-from routes.auth import user_login_required
+from app.service import db
+from app.service import tasks
+from app.routes.auth import user_login_required
 
 dashboard_routes = Blueprint("dashboard_routes", __name__)
 
@@ -65,9 +65,5 @@ def dashboard():
         )
 
     except Exception as e:
-        # Handle errors gracefully
-        print(f"Error fetching dashboard data: {e}")
-        return render_template('error.html', error="Failed to load dashboard data.")
-
-
-
+        print(f"[ERROR] Failed to load dashboard: {e}")
+        return render_template('dashboard.html', error=True)

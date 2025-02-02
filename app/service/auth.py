@@ -1,4 +1,4 @@
-from utils import user
+from app.service import user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 

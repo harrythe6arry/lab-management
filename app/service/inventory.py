@@ -1,5 +1,5 @@
 from psycopg2 import extras
-from utils import db, timezone
+from app.service import db, timezone
 
 def get_all_inventory_items():
     """Fetch all inventory items from the database."""
