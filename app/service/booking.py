@@ -4,6 +4,7 @@ from tkinter.constants import INSERT
 import psycopg2
 from flask import session
 
+import app.service.timezone
 from app.service import db
 
 def get_available_rooms(selected_date, timeslot):
@@ -115,6 +116,8 @@ def get_all_bookings():
                     # Assuming booking[3] is the date and booking[2] is the time (adjust if your table is different)
                     start_datetime = booking[3]  # Assuming booking[3] is a datetime object
 
+
+
                     event = {
                         "id": booking[0],
                         "title": booking[1],  # Show only booking name
@@ -123,7 +126,7 @@ def get_all_bookings():
                             "room": booking[4],  # Room name
                             "equipments": booking[5] if booking[5] else [],  # List of equipment
                             "created_by": booking[6],  # Created by user
-                            "created_at": booking[7].strftime("%Y-%m-%d %H:%M:%S"),
+                            "created_at": app.service.timezone.convert_utc_to_thailand_time(booking[7]).strftime("%Y-%m-%d %H:%M:%S"),
                             "date": start_datetime.strftime('%Y-%m-%d'),
                             "timeslot": booking[2]
                         }
