@@ -8,6 +8,7 @@ from app.service import tasks, timezone
 
 tasks_routes = Blueprint("tasks_routes", __name__)
 
+
 @tasks_routes.route('/tasks', methods=['GET'])
 @user_login_required
 def fetch_tasks():
@@ -18,6 +19,7 @@ def fetch_tasks():
     print(f"Users: {users}")
 
     return render_template('tasks.html', task_data=task, today=now, users=users)
+
 
 @tasks_routes.route('/tasks/add', methods=['GET', 'POST'])
 @user_login_required
@@ -38,19 +40,14 @@ def add_task():
 
 @tasks_routes.route('/tasks/edit', methods=['GET','POST'])
 @user_login_required
+
 def edit_task():
     """Edit an existing task."""
-
-
-
     task_id = request.form.get('id')
     name = request.form.get('name')
     due_date = request.form.get('due_date')
     status = request.form.get('status')
     assigned_to = request.form.get('assigned-to')
-
-
-
 
     print(f" task_id: {task_id} name: {name} due_date: {due_date} status: {status} assigned_to: {assigned_to}")
 
@@ -60,6 +57,7 @@ def edit_task():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @tasks_routes.route('/tasks/delete', methods=['POST'])
 @user_login_required
@@ -73,7 +71,6 @@ def delete_task():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 
 @tasks_routes.route('/tasks/update-status', methods=['POST'])

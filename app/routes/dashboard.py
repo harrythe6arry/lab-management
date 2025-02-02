@@ -6,6 +6,7 @@ from app.routes.auth import user_login_required
 
 dashboard_routes = Blueprint("dashboard_routes", __name__)
 
+
 @dashboard_routes.route('/dashboard')
 @dashboard_routes.route('/')
 @user_login_required
@@ -46,7 +47,6 @@ def dashboard():
         """)
         recent_updates = cur.fetchall()
 
-
         # Close database connection
         db.close_db_connection(conn)
         tasks_data = tasks.get_all_tasks()
@@ -61,7 +61,7 @@ def dashboard():
             low_stock_items=low_stock_items,
             low_stock_list=low_stock_list,
             recent_updates=recent_updates,
-            tasks_data= tasks_data
+            tasks_data=tasks_data
         )
 
     except Exception as e:

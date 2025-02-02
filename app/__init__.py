@@ -3,6 +3,7 @@ import os
 from flask import Flask
 from app.routes import auth, dashboard, tasks, users, inventory, booking
 
+
 def create_app():
     app = Flask(__name__)
     app.register_blueprint(auth.auth_routes)

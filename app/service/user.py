@@ -1,6 +1,7 @@
 import psycopg2
 from app.service import auth, db
 
+
 def insert_user(username, password, role):
     hashed_pw = auth.hash_password(password)  # Use hashed_password to generate the hash
     try:
@@ -20,6 +21,7 @@ def insert_user(username, password, role):
         print(f"[ERROR] Failed to insert user: {e}")
         return False
 
+
 def delete(username):
     try:
         with db.get_db_connection() as conn:
@@ -30,6 +32,7 @@ def delete(username):
     except psycopg2.Error as e:
         print(f"[ERROR] Failed to delete user: {e}")
         return False
+
 
 def get_password_by_username(username):
     try:
@@ -44,6 +47,7 @@ def get_password_by_username(username):
         print(f"[ERROR] Failed to fetch password: {e}")
         return None
 
+
 def get_role_by_username(username):
     try:
         with db.get_db_connection() as conn:
@@ -56,6 +60,7 @@ def get_role_by_username(username):
     except psycopg2.Error as e:
         print(f"[ERROR] Failed to fetch role: {e}")
         return None
+
 
 def get_all_users():
     users = []

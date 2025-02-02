@@ -3,13 +3,16 @@ from app.service import user, auth
 
 auth_routes = Blueprint("auth_routes", __name__)
 
+
 def user_login_required(f):
     def wrap(*args, **kwargs):
         if "user" not in session:
             return redirect(url_for("auth_routes.login"))  # Redirect to login page if not logged in
         return f(*args, **kwargs)
+
     wrap.__name__ = f.__name__  # Preserve function name
     return wrap
+
 
 def admin_login_required(f):
     def wrap(*args, **kwargs):
@@ -18,8 +21,10 @@ def admin_login_required(f):
         if user.get_role_by_username(session["user"]) != "Admin":
             return redirect(url_for("dashboard.dashboard"))
         return f(*args, **kwargs)
+
     wrap.__name__ = f.__name__
     return wrap
+
 
 @auth_routes.route('/login', methods=['GET', 'POST'])
 def login():
@@ -38,6 +43,7 @@ def login():
 
     # Pass the error message to the template
     return render_template('login.html', error=error_message)
+
 
 @auth_routes.route('/logout')
 def logout():
