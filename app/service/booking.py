@@ -115,9 +115,6 @@ def get_all_bookings():
                 for booking in bookings:
                     # Assuming booking[3] is the date and booking[2] is the time (adjust if your table is different)
                     start_datetime = booking[3]  # Assuming booking[3] is a datetime object
-
-
-
                     event = {
                         "id": booking[0],
                         "title": booking[1],  # Show only booking name
@@ -138,15 +135,31 @@ def get_all_bookings():
         return []
 
 
-def delete_booking(delete_id):
+import psycopg2
+
+
+def delete_booking(booking_id):
     try:
         with db.get_db_connection() as conn:
             with conn.cursor() as cur:
-                cur.execute("DELETE FROM bookings WHERE id = %s", (delete_id,))
+                cur.execute("""
+                    SELECT booking_name FROM schedule WHERE id = %s
+                """, (booking_id,))
+                booking_name = cur.fetchone()[0]
+
+                cur.execute("""
+                    DELETE FROM bookings
+                    WHERE booking_name = %s
+                """, (booking_name,))
+
+                cur.execute("""
+                    DELETE FROM schedule 
+                    WHERE id = %s
+                """, (booking_id,))
+
                 conn.commit()
+                print("Booking and related bookings deleted successfully.")
                 return True
     except psycopg2.Error as e:
-        print(f"[ERROR] Failed to delete booking: {e}")
+        print(f"[ERROR] Database connection failed: {e}")
         return False
-    finally:
-        db.close_db_connection(conn)

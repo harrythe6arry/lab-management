@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for
 from app.service import booking
 from app.routes import auth
 
@@ -83,9 +83,11 @@ def get_bookings():
 
 @booking_routes.route('/api/bookings/delete', methods=['POST'])
 @auth.user_login_required
-def delete_booking():
+def delete():
     booking_id = request.json['id']
-    success = booking.delete_booking(booking_id)
-    if success:
-        return jsonify({'message': 'Booking deleted successfully'})
-    return jsonify({'error': 'Failed to delete booking'}), 400
+    try:
+        booking.delete_booking(booking_id)
+        return "Booking deleted successfully", 200
+    except Exception as e:
+        print(f"[ERROR] Failed to delete booking: {e}")
+        return "Error deleting booking", 500
