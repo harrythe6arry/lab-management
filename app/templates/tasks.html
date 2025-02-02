@@ -184,30 +184,48 @@
                     </div>
                     <div class="modal-body p-4">
                         <form id="addTaskForm">
+                            <!-- Task Name Field -->
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Task Name</label>
-                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                       name="name" required>
+                                <input type="text" name="name"
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="Enter task name" required>
                             </div>
+
+                            <!-- Due Date Field -->
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Due Date</label>
-                                <input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                       name="due_date" required>
+                                <input type="date" name="due_date"
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                       required>
                             </div>
+
+                            <!-- Status Field -->
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Status</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" name="status"
+                                <select name="status"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                         required>
                                     <option value="Not Started">Not Started</option>
                                     <option value="Pending">Pending</option>
                                     <option value="Completed">Completed</option>
                                 </select>
                             </div>
+
+                            <!-- Assigned To Field -->
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Assigned To</label>
-                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                       name="assigned_to" required>
+                                <select name="assigned_to"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        required>
+                                    {% for user in users %}
+                                        <option value="{{ user[1] }}">{{ user[1] }} ({{ user[2] }})</option>
+                                    {% else %}
+                                        <option value="" disabled>No users available</option>
+                                    {% endfor %}
+                                </select>
                             </div>
+                            <!-- Submit Button -->
                             <button type="submit"
                                     class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-300">
                                 Add Task
@@ -245,10 +263,17 @@
                                     <option value="Completed">Completed</option>
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Assigned To</label>
-                                <input type="text" class="form-control" name="assigned-to" id="edit-assigned-to"
-                                       required>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Assigned To</label>
+                                <select name="assigned-to"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        required>
+                                    {% for user in users %}
+                                        <option value="{{ user[1] }}">{{ user[1] }} ({{ user[2] }})</option>
+                                    {% else %}
+                                        <option value="" disabled>No users available</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-warning">Update Task</button>
                         </form>
@@ -420,8 +445,9 @@
                     }
                 }
             }
+
             // Call updateTaskStatuses once the page is loaded
-         function getStatusFromBoard(boardId) {
+            function getStatusFromBoard(boardId) {
                 switch (boardId) {
                     case 'not-started':
                         return 'Not Started';
