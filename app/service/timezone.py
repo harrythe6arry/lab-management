@@ -4,9 +4,12 @@ import pytz
 # Set the Thailand timezone
 THAILAND_TZ = pytz.timezone('Asia/Bangkok')
 
+
 def get_thailand_time():
     """Get the current time in Thailand timezone."""
     return datetime.now(THAILAND_TZ)
+
+
 #
 # def convert_utc_to_thailand_time(utc_time):
 #     """Convert a UTC datetime object to Thailand timezone."""

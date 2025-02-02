@@ -1,6 +1,7 @@
 from psycopg2 import extras
 from app.service import db, timezone
 
+
 def get_all_inventory_items():
     """Fetch all inventory items from the database."""
     conn = db.get_db_connection()
@@ -14,6 +15,7 @@ def get_all_inventory_items():
         item['last_updated'] = timezone.convert_utc_to_thailand_time(item['last_updated'])
 
     return inventory_data
+
 
 def add_inventory_item(ingredient, amount, threshold, updated_by):
     """Add a new item to the inventory, summing amounts for duplicate ingredients."""
@@ -77,6 +79,7 @@ def add_inventory_item(ingredient, amount, threshold, updated_by):
         db.close_db_connection(conn)
         print("Database connection closed.")
 
+
 def update_inventory_item(item_id, ingredient, amount, threshold, updated_by):
     """Update an existing inventory item."""
     try:
@@ -102,7 +105,6 @@ def update_inventory_item(item_id, ingredient, amount, threshold, updated_by):
         raise e
     finally:
         db.close_db_connection(conn)
-
 
 
 def delete_inventory_item(item_id):

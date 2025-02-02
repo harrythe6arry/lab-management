@@ -3,11 +3,13 @@ from app.service import user
 
 users_routes = Blueprint("users_routes", __name__)
 
-@users_routes.route('/usermanagement', methods=['GET', 'POST']) # wil have to create page for members and adding
+
+@users_routes.route('/usermanagement', methods=['GET', 'POST'])  # wil have to create page for members and adding
 def user_management():
     user_role = user.get_role_by_username(session["user"])
     users_list = user.get_all_users()
     return render_template('user_management.html', role=user_role, users=users_list)
+
 
 @users_routes.route('/adduser', methods=['GET', 'POST'])
 def add_user():
@@ -29,6 +31,7 @@ def add_user():
             else:
                 return jsonify({"message": "An error occurred"}), 500
     return render_template('add_user.html')
+
 
 @users_routes.route('/deleteuser', methods=['POST'])
 def delete_user():

@@ -1,6 +1,7 @@
 from psycopg2 import extras
 from app.service import db, timezone
 
+
 def get_all_tasks():
     """Fetch all tasks from the database."""
     conn = db.get_db_connection()
@@ -10,7 +11,7 @@ def get_all_tasks():
     db.close_db_connection(conn)
 
     # Convert UTC timestamps to Thailand time and format dates
-     # add task that is overduem causes duplicates
+    # add task that is overduem causes duplicates
     for task in tasks:
         if task['created_at']:
             task['created_at'] = timezone.convert_utc_to_thailand_time(task['created_at'])
@@ -37,8 +38,6 @@ def get_all_tasks():
 def add_task(name, due_date, status="Not Started", assigned_to=None):
     """Add a new task to the database."""
 
-
-
     try:
         conn = db.get_db_connection()
         cur = conn.cursor()
@@ -56,10 +55,12 @@ def add_task(name, due_date, status="Not Started", assigned_to=None):
     finally:
         db.close_db_connection(conn)
 
+
 def update_task(task_id, name=None, due_date=None, status=None, assigned_to=None):
     """Update an existing task."""
     try:
-        print(f"Updating task ID: {task_id} with name: {name}, due_date: {due_date}, status: {status}, assigned_to: {assigned_to}")
+        print(
+            f"Updating task ID: {task_id} with name: {name}, due_date: {due_date}, status: {status}, assigned_to: {assigned_to}")
         conn = db.get_db_connection()
         cur = conn.cursor()
 
@@ -78,8 +79,6 @@ def update_task(task_id, name=None, due_date=None, status=None, assigned_to=None
         if due_date is not None:
             update_fields.append("due_date = %s")
             values.append(due_date)
-
-
 
         # Ensure there's something to update
         if not update_fields:
@@ -104,7 +103,6 @@ def update_task(task_id, name=None, due_date=None, status=None, assigned_to=None
         db.close_db_connection(conn)
 
 
-
 def delete_task(task_id):
     """Delete a task from the database."""
     try:
@@ -122,7 +120,6 @@ def delete_task(task_id):
 
 def update_task_status(task_id, status):
     try:
-
 
         # Prepare the update query
         conn = db.get_db_connection()
@@ -150,4 +147,3 @@ def update_task_status(task_id, status):
         cur.close()
         conn.close()
         db.close_db_connection(conn)
-

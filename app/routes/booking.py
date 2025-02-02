@@ -1,12 +1,15 @@
 from flask import Blueprint, render_template, request, jsonify
 from app.service import booking
 from app.routes import auth
+
 booking_routes = Blueprint('booking_routes', __name__)
+
 
 @booking_routes.route('/booking', methods=['GET'])
 @auth.user_login_required
 def booking_page():
     return render_template('booking.html')
+
 
 @booking_routes.route('/api/available/rooms', methods=['GET'])
 @auth.user_login_required
@@ -20,6 +23,7 @@ def get_available_rooms():
         return jsonify({'rooms': [{'id': room[0], 'name': room[1]} for room in available_rooms]})
     return jsonify({'rooms': []})
 
+
 @booking_routes.route('/api/available/equipments', methods=['GET'])
 @auth.user_login_required
 def get_available_equipments():
@@ -30,6 +34,7 @@ def get_available_equipments():
     if available_equipment:
         return jsonify({'equipments': [{'id': eq[0], 'name': eq[1]} for eq in available_equipment]})
     return jsonify({'equipments': []})
+
 
 @booking_routes.route('/api/validate/quantity', methods=['GET'])
 @auth.user_login_required
@@ -62,3 +67,15 @@ def submit_booking():
 
     return jsonify(booking_result)
 
+
+@booking_routes.route('/calendar', methods=['GET'])
+@auth.user_login_required
+def calendar_page():
+    return render_template('calendar.html')
+
+
+@booking_routes.route('/api/bookings', methods=['GET'])
+@auth.user_login_required
+def get_bookings():
+    events = booking.get_all_bookings()
+    return jsonify(events)
